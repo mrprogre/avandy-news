@@ -37,7 +37,7 @@
 
 Путь к файлам программы:
 
-**Windows**: C:\Users\<username>\News
+**Windows**: C:\Users\username\News
 
 **Linux**: home/username/News
 
