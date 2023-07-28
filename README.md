@@ -5,7 +5,7 @@
 
 Программа включена в [Реестр российского программного](https://reestr.digital.gov.ru/reestr/1483979/) обеспечения.
 
-![QIP Shot - Screen 1168](https://github.com/mrprogre/avandy-news/assets/45883640/2f2e93c9-aa7a-482e-879d-e36b78b7c0a5)
+![QIP Shot - Screen 1168](https://github.com/mrprogre/avandy-news/assets/45883640/81e94755-32bb-4054-9420-d46028ec0eeb)
 
 ----
 **Возможности программы:**
