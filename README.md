@@ -39,5 +39,5 @@
 
 **Windows**: C:\Users\<username>\News
 
-**Linux**: home/<username>/News
+**Linux**: home/username/News
 
