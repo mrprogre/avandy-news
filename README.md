@@ -7,6 +7,8 @@
 
 ![QIP Shot - Screen 1168](https://github.com/mrprogre/avandy-news/assets/45883640/81e94755-32bb-4054-9420-d46028ec0eeb)
 
+![b4087d22886c05f621a0eac1f606d7ae](https://github.com/mrprogre/avandy-news/assets/45883640/51c3ba9b-3750-4903-85e5-bcf7baa5f7f0)
+
 ----
 **Возможности программы:**
 - многопользовательское приложение с персонализированными настройками интерфейса и фильтрацией новостей
