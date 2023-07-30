@@ -1782,19 +1782,21 @@ public class Gui extends JFrame {
         checkForUpdates.addActionListener(e -> new Thread(() -> {
             try {
                 String url = null;
-                URL oracle = new URL("https://avandy-news.ru/download/index.html");
+                URL oracle = new URL("https://avandy-news.ru/version.txt");
                 BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
+                    System.out.println(inputLine);
 
-                    if (OsChecker.isUnix() && inputLine.contains("new-version-lin")) {
-                        url = inputLine.substring(69, inputLine.indexOf("</div>"));
-                    } else if (OsChecker.isWindows() && inputLine.contains("new-version-url")) {
-                        url = inputLine.substring(69, inputLine.indexOf("</div>"));
+                    if (OsChecker.isUnix() && inputLine.contains("lin")) {
+                        url = inputLine.substring(4, inputLine.indexOf(";"));
+                    } else if (OsChecker.isWindows() && inputLine.contains("win")) {
+                        url = inputLine.substring(4, inputLine.indexOf(";"));
                     }
 
-                    if (inputLine.contains("app-version")) {
-                        String appVer = inputLine.substring(65, 72);
+                    if (inputLine.contains("ver")) {
+                        String appVer = inputLine.substring(4, inputLine.indexOf(";"));
+                        System.out.println(appVer);
                         if (Main.APP_VERSION.equals(appVer))
                             Common.showInfo("You already have the latest version of Avandy News Analysis");
                         else {

@@ -9,9 +9,9 @@ import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import javax.swing.*;
 
 public class Main {
-    // При обновлении менять версию в поле download/index.html data-name="app-version"
-    public static final String APP_VERSION = "1.0.0.2";
-    public static final String APP_VERSION_DATE = "17.07.2023";
+    // При обновлении менять версию в поле "ver" version.html
+    public static final String APP_VERSION = "1.0.0.3";
+    public static final String APP_VERSION_DATE = "30.07.2023";
 
     public static void main(String[] args) {
         // установка темы окна авторизации
