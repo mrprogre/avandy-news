@@ -32,6 +32,7 @@
             color: #ff075b;
             font-weight: bold;
         }
+
     </style>
     <link rel="icon" href="./assets/images/logo.png" />
     <script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js"></script>
@@ -55,7 +56,7 @@
             <div class="col-sm-9 col-xs-12">
                 <div class="nes-balloon from-left">
                     <p style="color: #ff0000"><span>Hello, friend! <i class="nes-icon is-large heart"></i></span></p>
-                    <p> I am a news analyzer and RSS aggregator with powerful filtering of unnecessary information and headline search by keywords in any language of the World with one click 
+                    <p> I am a news analyzer and RSS aggregator with powerful filtering of unnecessary information and headline search by keywords in any language of the World with one click
                         [<a href="https://github.com/mrprogre/avandy-news" target="_blank" style="text-decoration: none;" class="text" download><b>open source</b></a>]
                     </p>
                 </div>
@@ -69,7 +70,7 @@
                     <div class="lists">
 
                         <details>
-                            <summary><span class="nes-text is-primary">Download</span></summary>                       
+                            <summary><span class="nes-text is-primary">Download</span></summary>
                             <p style="margin-left: 20px; margin-top: 5px;">
                                 <a href="./assets/news-demo-win.rar" style="text-decoration: none;" class="text" download><b>Windows</b></a> <br />
                                 <a href="./assets/news-demo-linux.jar" style="text-decoration: none;" title="Java required: sudo apt install default-jre" class="text" download><b>Linux</b></a> <br />
@@ -77,19 +78,19 @@
                         </details>
 
                         <details>
-                            <summary><span class="nes-text is-primary">Functionality</span></summary>  
+                            <summary><span class="nes-text is-primary">Functionality</span></summary>
                             <ul>
                                 <li>multi-user application with personalized interface settings and news filtering</li>
                                 <li>search for news by one word or by several keywords for a period without filtering titles</li>
                                 <li>search for all news using filtering</li>
                                 <li>ability to add/remove/deactivate news sources (more than 20 RSS sources by default)</li>
-                                <li>analysis of the frequency of words in news headlines - "Top 10"</li>
-                                <li>display titles by double-clicking on a word from the "Top 10" for the period</li>
+                                <li>analysis of the frequency of words used in news headlines - "Top-10" using the <a href="https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance" target="_blank"> Jaro-Winkler</a> string similarity method</li>
+                                <li>display titles by double clicking on a word from the "Top 10" for the period</li>
                                 <li>the ability to exclude words from the "Top 10" and return them back</li>
                                 <li>setting feelings from reading the news (positive/negative) and its significance (weight)</li>
                                 <li>automatic setting of sensations according to predetermined rules (adding / deleting / deactivating rules for determining positive / negative)</li>
                                 <li>built-in SQLite</li>
-                                <li>Save titles to favorites</li>
+                                <li>save titles to favorites</li>
                                 <li>manually adding news to the archive</li>
                                 <li>notification of pre-added events</li>
                                 <li>quick jump to frequently used sites</li>
@@ -106,14 +107,14 @@
                         </details>
 
                         <details>
-                            <summary><span class="nes-text is-primary">Demonstration</span></summary>  
+                            <summary><span class="nes-text is-primary">Demonstration</span></summary>
                             <video width="100%" controls="" autoplay="" muted="" style="margin-left: 20px; margin-top: 10px;">
                                 <source src="./assets/demo.mp4" type="video/mp4" />
                             </video>
                         </details>
 
                         <details>
-                            <summary><span class="nes-text is-primary">Other information</span></summary>  
+                            <summary><span class="nes-text is-primary">Other information</span></summary>
                             <p style="margin-left: 20px; margin-top: 10px;">
                                 Copyright (c) 2023 Chernyavskiy Dmitriy Andreevich<br /><br />
 
@@ -238,9 +239,12 @@
             trackLinks: true,
             accurateTrackBounce: true
         });
+
     </script>
     <noscript>
         <div><img src="https://mc.yandex.ru/watch/92978972" style="position:absolute; left:-9999px;" alt="" /></div>
     </noscript>
     <!-- /Yandex.Metrika counter -->
-</body></html>
+</body>
+
+</html>
