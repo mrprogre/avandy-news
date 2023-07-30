@@ -9,7 +9,7 @@ import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import javax.swing.*;
 
 public class Main {
-    // При обновлении менять версию в поле "ver" version.html
+    // При обновлении менять версию в поле "ver" version.txt
     public static final String APP_VERSION = "1.0.0.3";
     public static final String APP_VERSION_DATE = "30.07.2023";
 
