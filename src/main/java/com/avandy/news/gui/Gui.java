@@ -1786,7 +1786,6 @@ public class Gui extends JFrame {
                 BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    System.out.println(inputLine);
 
                     if (OsChecker.isUnix() && inputLine.contains("lin")) {
                         url = inputLine.substring(4, inputLine.indexOf(";"));
@@ -1796,7 +1795,6 @@ public class Gui extends JFrame {
 
                     if (inputLine.contains("ver")) {
                         String appVer = inputLine.substring(4, inputLine.indexOf(";"));
-                        System.out.println(appVer);
                         if (Main.APP_VERSION.equals(appVer))
                             Common.showInfo("You already have the latest version of Avandy News Analysis");
                         else {
