@@ -39,6 +39,8 @@ public class Common {
     public final HashMap<String, Integer> guiSettings = new HashMap<>();
     public final HashMap<String, Color> guiColors = new HashMap<>();
     public static JComboBox<String> assistantInterval;
+    public final JComboBox<String> countriesCombobox = new JComboBox<>(
+            new String[]{"All", "Russia", "USA", "France", "Germany", "UK"});
 
     // создание файлов и директорий
     public static void createFiles() {

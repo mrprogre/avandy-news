@@ -53,15 +53,18 @@ public class Login {
 
     public void createUser() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 2, 0, 5));
+        panel.setLayout(new GridLayout(3, 2, 0, 5));
         JLabel userLabel = new JLabel("Username");
         JTextField user = new JTextField();
         JLabel passwordLabel = new JLabel("Password");
         JPasswordField passwordField = new JPasswordField();
+        JLabel countryLabel = new JLabel("Country");
         panel.add(userLabel);
         panel.add(user);
         panel.add(passwordLabel);
         panel.add(passwordField);
+        panel.add(countryLabel);
+        panel.add(Common.countriesCombobox);
 
         String[] menu = new String[]{"cancel", "add"};
         int action = JOptionPane.showOptionDialog(null, panel, "Add user",
@@ -76,7 +79,7 @@ public class Login {
                 usersCombobox = new JComboBox<>(jdbcQueries.getAllUsers().toArray());
                 username = user.getText();
                 userId = jdbcQueries.getUserIdByUsername(username);
-                jdbcQueries.initUser();
+                jdbcQueries.initUser((String) Common.countriesCombobox.getSelectedItem());
             }
         } else if (action == 1 && (user.getText().length() < USERNAME_LENGTH_MIN || user.getText().length() > USERNAME_LENGTH_MAX)) {
             Common.showAlert("The username length between " + USERNAME_LENGTH_MIN + " and " + USERNAME_LENGTH_MAX + " chars");

@@ -89,14 +89,15 @@ public class JdbcQueries {
     }
 
     // Вставка нового источника
-    public void addNewSource(String source, String link) {
+    public void addNewSource(String source, String link, String country) {
         if (link.contains("/") && link.contains(".")) {
             try {
-                String query = "INSERT INTO rss_list(source, link, is_active, user_id) VALUES (?, ?, 1, ?)";
+                String query = "INSERT INTO rss_list(source, link, is_active, user_id, country) VALUES (?, ?, 1, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, source);
                 statement.setString(2, link);
                 statement.setInt(3, Login.userId);
+                statement.setString(4, country);
                 statement.executeUpdate();
                 statement.close();
 
@@ -258,12 +259,12 @@ public class JdbcQueries {
     public List<Source> getSources(String type) {
         List<Source> sources = new ArrayList<>();
         try {
-            String query = "SELECT id, source, link, is_active, position FROM rss_list " +
+            String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
                     "WHERE is_active = 1 AND user_id = ? " +
                     "ORDER BY position";
 
             if (type.equals("all")) {
-                query = "SELECT id, source, link, is_active, position FROM rss_list WHERE user_id = ? " +
+                query = "SELECT id, source, link, is_active, position, country FROM rss_list WHERE user_id = ? " +
                         "ORDER BY is_active DESC, id";
             }
 
@@ -278,6 +279,7 @@ public class JdbcQueries {
                         .link(rs.getString("link"))
                         .isActive(rs.getBoolean("is_active"))
                         .position(rs.getInt("position"))
+                        .country(rs.getString("country"))
                         .build());
             }
             rs.close();
@@ -698,6 +700,33 @@ public class JdbcQueries {
         return queries;
     }
 
+    public List<String> getRssQueries(String country) {
+        List<String> queries = new ArrayList<>();
+
+        try {
+            PreparedStatement statement;
+            String query;
+            if (country.equals("All")) {
+                query = "SELECT query FROM init_rss";
+                statement = connection.prepareStatement(query);
+            } else {
+                query = "SELECT query FROM init_rss WHERE country = ?";
+                statement = connection.prepareStatement(query);
+                statement.setString(1, country);
+            }
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                queries.add(rs.getString("query"));
+            }
+            rs.close();
+            statement.close();
+        } catch (Exception e) {
+            Common.showAlert("getRssQueries error: " + e.getMessage());
+        }
+        return queries;
+    }
+
     public List<String> getExcludedItems() {
         List<String> items = new ArrayList<>();
         try {
@@ -974,12 +1003,15 @@ public class JdbcQueries {
         }
     }
 
-    public void initUser() {
-        List<String> queries = getInitQueries();
+    public void initUser(String userCountry) {
+        List<String> data = getInitQueries();
+        List<String> rssList = getRssQueries(userCountry);
+        data.addAll(rssList);
+
         try {
             connection.setAutoCommit(false);
             PreparedStatement statement;
-            for (String query : queries) {
+            for (String query : data) {
                 statement = connection.prepareStatement(query);
                 statement.setInt(1, Login.userId);
                 statement.executeUpdate();

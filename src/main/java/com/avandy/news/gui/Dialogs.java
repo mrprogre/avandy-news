@@ -49,17 +49,18 @@ public class Dialogs extends JDialog implements KeyListener {
                 this.setTitle("Sources");
                 this.setLocationRelativeTo(Gui.mainTableScrollPane);
 
-                Object[] columns = {"Pos", "Source", "Link", "", " "};
+                Object[] columns = {"Pos", "Country", "Source", "Link", "", " "};
                 model = new DefaultTableModel(new Object[][]{
                 }, columns) {
-                    final boolean[] columnEditable = new boolean[]{false, false, false, true, true};
+                    final boolean[] columnEditable = new boolean[]{false, false, false, false, true, true};
 
                     public boolean isCellEditable(int row, int column) {
                         return columnEditable[column];
                     }
 
                     // Сортировка
-                    final Class[] types_unique = {Integer.class, String.class, String.class, Boolean.class, Button.class};
+                    final Class[] types_unique = {Integer.class, String.class, String.class, String.class,
+                            Boolean.class, Button.class};
 
                     @Override
                     public Class getColumnClass(int columnIndex) {
@@ -67,8 +68,8 @@ public class Dialogs extends JDialog implements KeyListener {
                     }
                 };
                 table = new JTable(model);
-                table.getColumnModel().getColumn(3).setCellEditor(new CheckBoxEditor(new JCheckBox()));
-                table.getColumn(" ").setCellRenderer(new ButtonColumn(table, 4));
+                table.getColumnModel().getColumn(4).setCellEditor(new CheckBoxEditor(new JCheckBox()));
+                table.getColumn(" ").setCellRenderer(new ButtonColumn(table, 5));
                 table.setAutoCreateRowSorter(true);
                 table.getTableHeader().setReorderingAllowed(false);
                 DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -78,11 +79,13 @@ public class Dialogs extends JDialog implements KeyListener {
                 JTableHeader header = table.getTableHeader();
                 header.setFont(new Font("Tahoma", Font.BOLD, 13));
                 table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-                table.getColumnModel().getColumn(0).setMaxWidth(30);
-                table.getColumnModel().getColumn(1).setPreferredWidth(150);
-                table.getColumnModel().getColumn(2).setPreferredWidth(250);
-                table.getColumnModel().getColumn(3).setMaxWidth(30);
+                table.getColumnModel().getColumn(0).setMaxWidth(40);
+                table.getColumnModel().getColumn(0).setPreferredWidth(40);
+                table.getColumnModel().getColumn(1).setPreferredWidth(100);
+                table.getColumnModel().getColumn(2).setPreferredWidth(150);
+                table.getColumnModel().getColumn(3).setPreferredWidth(250);
                 table.getColumnModel().getColumn(4).setMaxWidth(30);
+                table.getColumnModel().getColumn(5).setMaxWidth(30);
                 table.setColumnSelectionAllowed(true);
                 table.setCellSelectionEnabled(true);
                 table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -96,8 +99,8 @@ public class Dialogs extends JDialog implements KeyListener {
                         if (e.getClickCount() == 2) {
                             int row = table.convertRowIndexToModel(table.rowAtPoint(new Point(e.getX(), e.getY())));
                             int col = table.convertColumnIndexToModel(table.columnAtPoint(new Point(e.getX(), e.getY())));
-                            if (col == 2) {
-                                String url = (String) table.getModel().getValueAt(row, 2);
+                            if (col == 3) {
+                                String url = (String) table.getModel().getValueAt(row, 3);
                                 Gui.openPage(url);
                             }
                         }
@@ -111,14 +114,15 @@ public class Dialogs extends JDialog implements KeyListener {
                     JTextField rss = new JTextField();
                     JTextField link = new JTextField();
 
-                    Object[] newSource = {"Source:", rss, "Link to rss:", link};
+                    Object[] newSource = {"Source", rss, "Link to rss", link, "Country", Common.countriesCombobox};
                     int result = JOptionPane.showConfirmDialog(this, newSource,
                             "New source", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
                     if (rss.getText().length() > 0 && link.getText().length() > 0) {
                         if (result == JOptionPane.OK_OPTION) {
                             saveDialogPosition(nameXY);
-                            new JdbcQueries().addNewSource(rss.getText(), link.getText());
+                            new JdbcQueries().addNewSource(rss.getText(), link.getText(),
+                                    (String) Common.countriesCombobox.getSelectedItem());
                             this.setVisible(false);
                             new Dialogs("dialog_sources");
                             setDialogPosition(nameXY);
@@ -833,7 +837,7 @@ public class Dialogs extends JDialog implements KeyListener {
             case "smi": {
                 java.util.List<Source> sources = jdbcQueries.getSources("all");
                 for (Source s : sources) {
-                    Dialogs.model.addRow(new Object[]{++id, s.getSource(), s.getLink(), s.getIsActive()});
+                    Dialogs.model.addRow(new Object[]{++id, s.getCountry(), s.getSource(), s.getLink(), s.getIsActive()});
                 }
                 break;
             }

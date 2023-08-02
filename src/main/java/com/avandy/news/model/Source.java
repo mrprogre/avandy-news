@@ -12,4 +12,5 @@ public class Source {
     private Boolean isActive;
     private Integer position;
     private Integer userId;
+    private String country;
 }
