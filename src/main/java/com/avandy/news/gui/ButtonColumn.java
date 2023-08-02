@@ -112,10 +112,13 @@ public class ButtonColumn extends AbstractCellEditor implements TableCellRendere
         // окно источников RSS
         if (activeWindow == 2 && rowWithSource != -1) {
             rowWithSource = table.convertRowIndexToModel(rowWithSource);
-            String source = (String) Dialogs.model.getValueAt(rowWithSource, 1);
+
+            String country = (String) Dialogs.model.getValueAt(rowWithSource, 1);
+            String source = (String) Dialogs.model.getValueAt(rowWithSource, 2);
+
             // удаление из диалогового окна
             Dialogs.model.removeRow(rowWithSource);
-            jdbcQueries.removeItem(source, 2);
+            jdbcQueries.removeFromRssList(country, source);
         }
 
         // окно с исключенными из "Топ 10" слов (удаляем из базы)

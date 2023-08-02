@@ -794,6 +794,23 @@ public class JdbcQueries {
     }
 
     // Очистка данных любой передаваемой таблицы
+    public void removeFromRssList(String country, String source) {
+        try {
+            String query = "DELETE FROM rss_list where user_id = ? and country = ? and source = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, Login.userId);
+            statement.setString(2, country);
+            statement.setString(3, source);
+            statement.executeUpdate();
+            statement.close();
+
+            Common.console("Removed: " + country + " - " + source);
+        } catch (Exception e) {
+            Common.showAlert("deleteFromTable error: " + e.getMessage());
+        }
+    }
+
+    // Очистка данных любой передаваемой таблицы
     public void removeFromUsers(String username) {
         int userId = getUserIdByUsername(username);
         try {
@@ -1000,6 +1017,21 @@ public class JdbcQueries {
             statement.close();
         } catch (Exception e) {
             Common.showAlert("updateIsActiveStatus error: " + e.getMessage());
+        }
+    }
+
+    public void updateIsActiveCountry(boolean check, String country, String source) {
+        try {
+            String query = "UPDATE rss_list SET is_active = ? WHERE country = ? and source = ? and user_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setBoolean(1, check);
+            statement.setString(2, country);
+            statement.setString(3, source);
+            statement.setInt(4, Login.userId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            Common.showAlert("updateIsActiveCountry error: " + e.getMessage());
         }
     }
 
