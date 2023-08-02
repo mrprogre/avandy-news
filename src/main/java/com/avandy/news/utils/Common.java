@@ -40,7 +40,7 @@ public class Common {
     public final HashMap<String, Color> guiColors = new HashMap<>();
     public static JComboBox<String> assistantInterval;
     public final JComboBox<String> countriesCombobox = new JComboBox<>(
-            new String[]{"All", "Russia", "USA", "France", "Germany", "UK"});
+            new String[]{"All", "Russia", "USA", "France", "Germany", "UK", "Africa"});
 
     // создание файлов и директорий
     public static void createFiles() {
