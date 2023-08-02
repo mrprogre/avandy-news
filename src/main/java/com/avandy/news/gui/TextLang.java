@@ -17,7 +17,7 @@ public class TextLang {
             rightClickMenuAddWordToText, rightClickMenuKeywordsText, rightClickMenuKeywordsToolpitText,
             rightClickMenuExcludedText, rightClickMenuExcludedTooltipText, settingsDialogText,
             assistWelcome, assistQuestion, assistFind, assistAllNews, assistKeywords, assistOneWord,
-            assistPeriod, assistStartUp;
+            assistPeriod, assistStartUp, reminderToday, reminderTomorrow, reminderWillBe, reminderIs;
 
     public void setUiText() {
         String uiLang = Common.getUiLang();
@@ -80,6 +80,10 @@ public class TextLang {
             assistPeriod = "Search period";
             assistStartUp = "Show on startup";
             assistFind = "Find";
+            reminderToday = "Today";
+            reminderTomorrow = "Tomorrow";
+            reminderWillBe = "will be";
+            reminderIs = "is";
         } else if (uiLang.equals("ru")) {
             amountOfNewsLabelInitText = "Аванди Ньюс Анализ";
             amountOfNewsLabelText = "Всего: ";
@@ -138,6 +142,10 @@ public class TextLang {
             assistPeriod = "Период поиска";
             assistStartUp = "Показывать при запуске";
             assistFind = "Найти";
+            reminderToday = "Сегодня";
+            reminderTomorrow = "Завтра";
+            reminderWillBe = "исполняется";
+            reminderIs = "исполнилось";
         }
     }
 

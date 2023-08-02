@@ -5,6 +5,8 @@ import com.avandy.news.model.Dates;
 
 import java.time.LocalDate;
 
+import static com.avandy.news.gui.TextLang.*;
+
 public class Reminder {
 
     public void remind() {
@@ -21,19 +23,19 @@ public class Reminder {
         for (Dates date : new JdbcQueries().getDates(0)) {
             if (date.getMonth() == month && date.getDay() == day) {
                 if ((date.getType().equals("Birthday")  || date.getType().equals("Event")) && date.getYear() > 0) {
-                    Common.console("Today: " + date.getDescription() + " is " +
+                    Common.console(reminderToday + ": " + date.getDescription() + " " + reminderIs + " " +
                             (year - date.getYear()));
                 } else {
-                    Common.console("Today: " + date.getType() + " - " + date.getDescription());
+                    Common.console(reminderToday + ": " + date.getType() + " - " + date.getDescription());
                 }
             }
 
             if (date.getMonth() == monthTomorrow && date.getDay() == dayTomorrow) {
                 if ((date.getType().equals("Birthday") || date.getType().equals("Event")) && date.getYear() > 0) {
-                    Common.console("Tomorrow: " + date.getDescription() + " will be " +
+                    Common.console(reminderTomorrow + ": " + date.getDescription() + " " + reminderWillBe + " " +
                             (yearTomorrow - date.getYear()));
                 } else {
-                    Common.console("Tomorrow: " + date.getType() + " - " + date.getDescription());
+                    Common.console(reminderTomorrow + ": " + date.getType() + " - " + date.getDescription());
                 }
             }
         }
