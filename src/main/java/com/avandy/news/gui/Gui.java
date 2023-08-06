@@ -1745,8 +1745,23 @@ public class Gui extends JFrame {
                     "Реестр российского ПО: запись от 17.05.2023 №17539<br/> " +
                     "<font color=\"#FF7373\">avandy-news.ru</font><br/" +
                     "<font color=\"#fa8e47\">rps_project@mail.ru</font><br/> " +
-                    "<font color=\"#59C9FF\">github.com/mrprogre</font>" +
-                    "</<html>";
+                    "<font color=\"#59C9FF\">github.com/mrprogre</font><br/<br/" +
+                    "Permission is hereby granted, free of charge, to any person obtaining a copy of this software " + "<br/" +
+                    "and associated documentation files (the \"Software\"), to deal in the Software without restriction, " + "<br/" +
+                    "including without limitation the rights to use, copy, modify, merge, publish, distribute, " + "<br/" +
+                    "sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is " + "<br/" +
+                    "furnished to do so, subject to the following conditions:" + "<br/" +
+                    "The above copyright notice and this permission notice shall be included in all copies or " + "<br/" +
+                    "substantial portions of the Software." + "<br/<br/" +
+                    "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, " + "<br/" +
+                    "INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, " + "<br/" +
+                    "FITNESS FOR A PARTICULAR PURPOSE AND " + "<br/" +
+                    "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT " + "<br/" +
+                    "HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, " + "<br/" +
+                    "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, " + "<br/" +
+                    "OUT OF OR IN CONNECTION WITH " + "<br/" +
+                    "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." +
+            "</<html>";
 
             JOptionPane.showMessageDialog(mainTableScrollPane, text, "Information",
                     JOptionPane.INFORMATION_MESSAGE, Icons.MANUAL_ICON);
