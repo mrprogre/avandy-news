@@ -119,7 +119,6 @@ public class Dialogs extends JDialog implements KeyListener {
 
                     String linkValue = link.getText();
 
-                    // http://feeds.bbci.co.uk/russian/rss.xml
                     if (rss.getText().length() > 0 && linkValue.length() > 0) {
                         if (!Common.checkRss(linkValue)) {
                             Common.showAlert("Incorrect RSS source format:<br/>" + linkValue);
