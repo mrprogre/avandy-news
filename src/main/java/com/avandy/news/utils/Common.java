@@ -475,6 +475,10 @@ public class Common {
     }
 
     public static void showAlert(String message) {
+        JOptionPane.showMessageDialog(Gui.mainTableScrollPane, message, "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showAlertHtml(String message) {
         JLabel label = new JLabel("<html>" + message + "</<html>");
         JOptionPane.showMessageDialog(Gui.mainTableScrollPane, label, "Warning", JOptionPane.WARNING_MESSAGE);
     }

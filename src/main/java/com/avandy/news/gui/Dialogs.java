@@ -121,7 +121,7 @@ public class Dialogs extends JDialog implements KeyListener {
 
                     if (rss.getText().length() > 0 && linkValue.length() > 0) {
                         if (!Common.checkRss(linkValue)) {
-                            Common.showAlert("It's impossible to obtain data from this source:<br/>" + linkValue);
+                            Common.showAlertHtml("It's impossible to obtain data from this source:<br/>" + linkValue);
                             return;
                         }
 
