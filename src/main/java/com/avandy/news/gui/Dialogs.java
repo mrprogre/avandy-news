@@ -6,6 +6,9 @@ import com.avandy.news.export.ExportToExcel;
 import com.avandy.news.model.*;
 import com.avandy.news.search.Search;
 import com.avandy.news.utils.Common;
+import com.avandy.news.utils.Parser;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.io.FeedException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -14,6 +17,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -118,7 +122,7 @@ public class Dialogs extends JDialog implements KeyListener {
                     int result = JOptionPane.showConfirmDialog(this, newSource,
                             "New source", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-                   if (checkRss(link.getText())) return;
+                    if (checkRss(link.getText())) return;
 
                     if (rss.getText().length() > 0 && link.getText().length() > 0) {
                         if (result == JOptionPane.OK_OPTION) {
@@ -755,6 +759,21 @@ public class Dialogs extends JDialog implements KeyListener {
         dialogName = nameXY;
     }
 
+    public static boolean checkRss(String link) {
+        try {
+            for (Object message : new Parser().parseFeed(link).getEntries()) {
+                SyndEntry entry = (SyndEntry) message;
+                String title = entry.getTitle();
+                System.out.println(title + " " + (title != null && title.length() > 0));
+                return (title != null && title.length() > 0);
+            }
+        } catch (FeedException | IOException e) {
+            Common.showAlert(e.getMessage());
+        }
+
+        return false;
+    }
+
     private void showRightClickMenu() {
         JdbcQueries jdbcQueries = new JdbcQueries();
         final JPopupMenu popup = new JPopupMenu();
@@ -934,19 +953,4 @@ public class Dialogs extends JDialog implements KeyListener {
             setLocation(Integer.parseInt(dialogXY[0]), Integer.parseInt(dialogXY[1]));
         }
     }
-
-    private boolean checkRss(String link) {
-        try {
-            for (Object message : new Parser().parseFeed(link).getEntries()) {
-                SyndEntry entry = (SyndEntry) message;
-                String title = entry.getTitle();
-                return (title == null || title.isEmpty());
-            }
-        } catch (FeedException | IOException e) {
-            Common.showAlert(e.getMessage());
-        }
-
-        return false;
-    }
-    
 }
