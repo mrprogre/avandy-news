@@ -118,7 +118,7 @@ public class Dialogs extends JDialog implements KeyListener {
                     int result = JOptionPane.showConfirmDialog(this, newSource,
                             "New source", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-                    checkRss(link.getText());
+                   if (checkRss(link.getText())) return;
 
                     if (rss.getText().length() > 0 && link.getText().length() > 0) {
                         if (result == JOptionPane.OK_OPTION) {
