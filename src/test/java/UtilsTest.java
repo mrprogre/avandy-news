@@ -1,8 +1,8 @@
+import com.avandy.news.gui.Dialogs;
 import com.avandy.news.utils.JaroWinklerDistance;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UtilsTest {
     private final JaroWinklerDistance jwd = new JaroWinklerDistance();
@@ -24,6 +24,12 @@ public class UtilsTest {
                     assertTrue(value > 80);
             }
         }
+    }
+
+    @Test
+    public void checkRssTest() {
+        assertTrue(Dialogs.checkRss("https://www.agroinvestor.ru/feed/public-agronews.xml"));
+        assertFalse(Dialogs.checkRss("https://feeds.bbci.co.uk/russian/rss.xml"));
     }
 
 }
