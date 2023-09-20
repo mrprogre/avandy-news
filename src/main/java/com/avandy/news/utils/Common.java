@@ -480,8 +480,7 @@ public class Common {
     }
 
     public static void showInfo(String message) {
-        JLabel label = new JLabel("<html>" + message + "</<html>");
-        JOptionPane.showMessageDialog(Gui.mainTableScrollPane, label, "Info", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(Gui.mainTableScrollPane, message, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
     // Оставляет только буквы
