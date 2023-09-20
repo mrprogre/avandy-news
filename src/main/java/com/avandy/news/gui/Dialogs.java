@@ -110,7 +110,6 @@ public class Dialogs extends JDialog implements KeyListener {
                 JButton addButton = new JButton("Add RSS");
                 addButton.setForeground(FONT_COLOR);
                 addButton.addActionListener(e -> {
-
                     JTextField rss = new JTextField();
                     JTextField link = new JTextField();
 
@@ -120,9 +119,10 @@ public class Dialogs extends JDialog implements KeyListener {
 
                     String linkValue = link.getText();
 
+                    // http://feeds.bbci.co.uk/russian/rss.xml
                     if (rss.getText().length() > 0 && linkValue.length() > 0) {
                         if (!Common.checkRss(linkValue)) {
-                            Common.showAlert("RSS source is incorrect: " + linkValue);
+                            Common.showAlert("Incorrect RSS source format:<br/>" + linkValue);
                             return;
                         }
 
