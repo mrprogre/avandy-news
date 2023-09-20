@@ -7,14 +7,13 @@ import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.Headline;
 import com.avandy.news.search.Search;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.io.FeedException;
 import lombok.experimental.UtilityClass;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -738,6 +737,19 @@ public class Common {
             return false;
         }
         return true;
+    }
+
+    public static boolean checkRss(String link) {
+        try {
+            for (Object message : new Parser().parseFeed(link).getEntries()) {
+                SyndEntry entry = (SyndEntry) message;
+                String title = entry.getTitle();
+                return (title != null && title.length() > 0);
+            }
+        } catch (FeedException | IOException ignored) {
+            return false;
+        }
+        return false;
     }
 
 }

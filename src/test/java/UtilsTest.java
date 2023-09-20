@@ -1,4 +1,4 @@
-import com.avandy.news.gui.Dialogs;
+import com.avandy.news.utils.Common;
 import com.avandy.news.utils.JaroWinklerDistance;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +28,8 @@ public class UtilsTest {
 
     @Test
     public void checkRssTest() {
-        assertTrue(Dialogs.checkRss("https://www.agroinvestor.ru/feed/public-agronews.xml"));
-        assertFalse(Dialogs.checkRss("https://feeds.bbci.co.uk/russian/rss.xml"));
+        assertTrue(Common.checkRss("https://www.agroinvestor.ru/feed/public-agronews.xml"));
+        assertFalse(Common.checkRss("wrong.xml"));
     }
 
 }

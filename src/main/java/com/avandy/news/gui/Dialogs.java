@@ -6,9 +6,6 @@ import com.avandy.news.export.ExportToExcel;
 import com.avandy.news.model.*;
 import com.avandy.news.search.Search;
 import com.avandy.news.utils.Common;
-import com.avandy.news.utils.Parser;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.io.FeedException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,7 +14,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -122,12 +118,17 @@ public class Dialogs extends JDialog implements KeyListener {
                     int result = JOptionPane.showConfirmDialog(this, newSource,
                             "New source", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-                    if (checkRss(link.getText())) return;
+                    String linkValue = link.getText();
 
-                    if (rss.getText().length() > 0 && link.getText().length() > 0) {
+                    if (rss.getText().length() > 0 && linkValue.length() > 0) {
+                        if (!Common.checkRss(linkValue)) {
+                            Common.showAlert("RSS source is incorrect: " + linkValue);
+                            return;
+                        }
+
                         if (result == JOptionPane.OK_OPTION) {
                             saveDialogPosition(nameXY);
-                            new JdbcQueries().addNewSource(rss.getText(), link.getText(),
+                            new JdbcQueries().addNewSource(rss.getText(), linkValue,
                                     (String) Common.countriesCombobox.getSelectedItem());
                             this.setVisible(false);
                             new Dialogs("dialog_sources");
@@ -757,21 +758,6 @@ public class Dialogs extends JDialog implements KeyListener {
         });
 
         dialogName = nameXY;
-    }
-
-    public static boolean checkRss(String link) {
-        try {
-            for (Object message : new Parser().parseFeed(link).getEntries()) {
-                SyndEntry entry = (SyndEntry) message;
-                String title = entry.getTitle();
-                System.out.println(title + " " + (title != null && title.length() > 0));
-                return (title != null && title.length() > 0);
-            }
-        } catch (FeedException | IOException e) {
-            Common.showAlert(e.getMessage());
-        }
-
-        return false;
     }
 
     private void showRightClickMenu() {
