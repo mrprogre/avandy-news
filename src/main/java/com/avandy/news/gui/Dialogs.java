@@ -118,6 +118,8 @@ public class Dialogs extends JDialog implements KeyListener {
                     int result = JOptionPane.showConfirmDialog(this, newSource,
                             "New source", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
+                    checkRss(link.getText());
+
                     if (rss.getText().length() > 0 && link.getText().length() > 0) {
                         if (result == JOptionPane.OK_OPTION) {
                             saveDialogPosition(nameXY);
@@ -932,4 +934,19 @@ public class Dialogs extends JDialog implements KeyListener {
             setLocation(Integer.parseInt(dialogXY[0]), Integer.parseInt(dialogXY[1]));
         }
     }
+
+    private boolean checkRss(String link) {
+        try {
+            for (Object message : new Parser().parseFeed(link).getEntries()) {
+                SyndEntry entry = (SyndEntry) message;
+                String title = entry.getTitle();
+                return (title == null || title.isEmpty());
+            }
+        } catch (FeedException | IOException e) {
+            Common.showAlert(e.getMessage());
+        }
+
+        return false;
+    }
+    
 }
