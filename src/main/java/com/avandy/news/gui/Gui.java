@@ -1042,7 +1042,7 @@ public class Gui extends JFrame {
         }
     }
 
-    public static int getColumnIndex(String name) {
+    private int getColumnIndex(String name) {
         return mainTable.getColumnModel().getColumnIndex(name);
     }
 

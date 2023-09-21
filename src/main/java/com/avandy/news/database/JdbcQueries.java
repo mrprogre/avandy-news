@@ -263,7 +263,7 @@ public class JdbcQueries {
 
             if (type.equals("all")) {
                 query = "SELECT id, source, link, is_active, position, country FROM rss_list WHERE user_id = ? " +
-                        "ORDER BY is_active DESC, id";
+                        "ORDER BY is_active DESC, position";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -1008,6 +1008,21 @@ public class JdbcQueries {
             statement.close();
         } catch (Exception e) {
             Common.showAlert("updateIsActiveCountry error: " + e.getMessage());
+        }
+    }
+
+    public void updateRssPosition(int position, String country, String source) {
+        try {
+            String query = "UPDATE rss_list SET position = ? WHERE country = ? and source = ? and user_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, position);
+            statement.setString(2, country);
+            statement.setString(3, source);
+            statement.setInt(4, Login.userId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            Common.showAlert("updateRssPosition error: " + e.getMessage());
         }
     }
 

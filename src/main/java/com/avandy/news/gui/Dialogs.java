@@ -18,10 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Dialogs extends JDialog implements KeyListener {
+    private final JdbcQueries jdbcQueries = new JdbcQueries();
     public static JTable table;
     public static DefaultTableModel model;
     private final String dialogName;
     public static final Color FONT_COLOR = new Color(220, 179, 56);
+    JComboBox<Integer> positionCombobox = new JComboBox<>();
 
     public Dialogs(String name) {
         String nameXY = name + "_xy";
@@ -49,10 +51,14 @@ public class Dialogs extends JDialog implements KeyListener {
                 this.setTitle("Sources");
                 this.setLocationRelativeTo(Gui.mainTableScrollPane);
 
-                Object[] columns = {"Pos", "Country", "Source", "Link", "", " "};
+                for (int i = 1; i <= 100 ; i++) {
+                    positionCombobox.addItem(i);
+                }
+
+                Object[] columns = {"N", "Country", "Source", "Link", "Pos", "", " "};
                 model = new DefaultTableModel(new Object[][]{
                 }, columns) {
-                    final boolean[] columnEditable = new boolean[]{false, false, false, false, true, true};
+                    final boolean[] columnEditable = new boolean[]{false, false, false, false, true, true, true};
 
                     public boolean isCellEditable(int row, int column) {
                         return columnEditable[column];
@@ -60,7 +66,7 @@ public class Dialogs extends JDialog implements KeyListener {
 
                     // Сортировка
                     final Class[] types_unique = {Integer.class, String.class, String.class, String.class,
-                            Boolean.class, Button.class};
+                            JComboBox.class, Boolean.class, Button.class};
 
                     @Override
                     public Class getColumnClass(int columnIndex) {
@@ -68,8 +74,10 @@ public class Dialogs extends JDialog implements KeyListener {
                     }
                 };
                 table = new JTable(model);
-                table.getColumnModel().getColumn(4).setCellEditor(new CheckBoxEditor(new JCheckBox()));
-                table.getColumn(" ").setCellRenderer(new ButtonColumn(table, 5));
+                table.getColumn("").setCellEditor(new CheckBoxEditor(new JCheckBox()));
+                table.getColumn("Pos").setCellEditor(new DefaultCellEditor(positionCombobox));
+                table.getColumn(" ").setCellRenderer(new ButtonColumn(table, 6));
+                table.getColumn(" ").setCellRenderer(new ButtonColumn(table, 6));
                 table.setAutoCreateRowSorter(true);
                 table.getTableHeader().setReorderingAllowed(false);
                 DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -78,14 +86,16 @@ public class Dialogs extends JDialog implements KeyListener {
                 table.setFont(new Font("SansSerif", Font.PLAIN, 13));
                 JTableHeader header = table.getTableHeader();
                 header.setFont(new Font("Tahoma", Font.BOLD, 13));
-                table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-                table.getColumnModel().getColumn(0).setMaxWidth(40);
-                table.getColumnModel().getColumn(0).setPreferredWidth(40);
-                table.getColumnModel().getColumn(1).setPreferredWidth(100);
-                table.getColumnModel().getColumn(2).setPreferredWidth(150);
-                table.getColumnModel().getColumn(3).setPreferredWidth(250);
-                table.getColumnModel().getColumn(4).setMaxWidth(30);
-                table.getColumnModel().getColumn(5).setMaxWidth(30);
+                table.getColumn("N").setCellRenderer(renderer);
+                table.getColumn("N").setMaxWidth(40);
+                table.getColumn("N").setPreferredWidth(40);
+                table.getColumn("Country").setPreferredWidth(100);
+                table.getColumn("Source").setPreferredWidth(150);
+                table.getColumn("Link").setPreferredWidth(250);
+                table.getColumn("Pos").setMaxWidth(50);
+                table.getColumn("Pos").setCellRenderer(renderer);
+                table.getColumn("").setMaxWidth(30);
+                table.getColumn(" ").setMaxWidth(30);
                 table.setColumnSelectionAllowed(true);
                 table.setCellSelectionEnabled(true);
                 table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -103,6 +113,22 @@ public class Dialogs extends JDialog implements KeyListener {
                                 String url = (String) table.getModel().getValueAt(row, 3);
                                 Gui.openPage(url);
                             }
+                        }
+                    }
+                });
+
+                positionCombobox.addItemListener(e -> {
+                    int countryColumnNum = getColumnIndex("Country");
+                    int sourceColumnNum = getColumnIndex("Source");
+
+                    int row = table.getSelectedRow();
+                    int col = table.getSelectedColumn();
+                    if (row != -1) {
+                        if (table.getValueAt(row, col) != null) {
+                            String countryValue = table.getValueAt(row, countryColumnNum).toString();
+                            String sourceValue = table.getValueAt(row, sourceColumnNum).toString();
+                            int positionValue = (int) positionCombobox.getSelectedItem();
+                            jdbcQueries.updateRssPosition(positionValue, countryValue, sourceValue);
                         }
                     }
                 });
@@ -129,7 +155,7 @@ public class Dialogs extends JDialog implements KeyListener {
                             }
 
                             saveDialogPosition(nameXY);
-                            new JdbcQueries().addNewSource(rss.getText(), linkValue,
+                            jdbcQueries.addNewSource(rss.getText(), linkValue,
                                     (String) Common.countriesCombobox.getSelectedItem());
                             this.setVisible(false);
                             new Dialogs("dialog_sources");
@@ -238,7 +264,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 addButton.addActionListener(e -> {
                     if (word.getText().length() > 0) {
                         saveDialogPosition(nameXY);
-                        new JdbcQueries().addWordToExcludeTitles(word.getText());
+                        jdbcQueries.addWordToExcludeTitles(word.getText());
                         this.setVisible(false);
                         new Dialogs("dialog_excluded_headlines");
                         setDialogPosition(nameXY);
@@ -305,7 +331,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 addButton.addActionListener(e -> {
                     if (word.getText().length() > 0) {
                         saveDialogPosition(nameXY);
-                        new JdbcQueries().addKeyword(word.getText());
+                        jdbcQueries.addKeyword(word.getText());
                         this.setVisible(false);
                         new Dialogs("dialog_keywords");
                         setDialogPosition(nameXY);
@@ -476,7 +502,7 @@ public class Dialogs extends JDialog implements KeyListener {
 
                         if (Common.isDateValid(monthToDatabase, dayToDatabase)) {
                             saveDialogPosition(nameXY);
-                            new JdbcQueries().addDate(type, descr, dayToDatabase, monthToDatabase, yearToDatabase);
+                            jdbcQueries.addDate(type, descr, dayToDatabase, monthToDatabase, yearToDatabase);
                             this.setVisible(false);
                             new Dialogs("dialog_dates");
                             setDialogPosition(nameXY);
@@ -562,7 +588,7 @@ public class Dialogs extends JDialog implements KeyListener {
                                 String like = table.getValueAt(row, likeColumnNum).toString();
                                 String value = table.getValueAt(row, feelColumnNum).toString();
 
-                                new JdbcQueries().updateRules(like, value, "feel");
+                                jdbcQueries.updateRules(like, value, "feel");
                             }
                         }
                     } catch (Exception exception) {
@@ -585,7 +611,7 @@ public class Dialogs extends JDialog implements KeyListener {
                                 String like = table.getValueAt(row, likeColumnNum).toString();
                                 String value = table.getValueAt(row, weightColumnNum).toString();
 
-                                new JdbcQueries().updateRules(like, value, "wt");
+                                jdbcQueries.updateRules(like, value, "wt");
                             }
                         }
                     } catch (Exception exc) {
@@ -608,7 +634,7 @@ public class Dialogs extends JDialog implements KeyListener {
                                 String like = table.getValueAt(row, likeColumnNum).toString();
                                 String value = table.getValueAt(row, callOrderColumnNum).toString();
 
-                                new JdbcQueries().updateRules(like, value, "call-order");
+                                jdbcQueries.updateRules(like, value, "call-order");
                             }
                         }
                     } catch (Exception exc) {
@@ -647,7 +673,7 @@ public class Dialogs extends JDialog implements KeyListener {
                         Integer weightValue = Integer.parseInt(String.valueOf(addRuleWtCombobox.getSelectedItem()));
 
                         saveDialogPosition(nameXY);
-                        new JdbcQueries().addAutoFeelingRule(likeText, feel, weightValue);
+                        jdbcQueries.addAutoFeelingRule(likeText, feel, weightValue);
                         this.setVisible(false);
                         new Dialogs("dialog_feelings");
                         setDialogPosition(nameXY);
@@ -762,7 +788,6 @@ public class Dialogs extends JDialog implements KeyListener {
     }
 
     private void showRightClickMenu() {
-        JdbcQueries jdbcQueries = new JdbcQueries();
         final JPopupMenu popup = new JPopupMenu();
 
         // Show describe (menu)
@@ -840,17 +865,17 @@ public class Dialogs extends JDialog implements KeyListener {
     // Заполнение диалоговых окон данными
     private void showDialogs(String name) {
         int id = 0;
-        JdbcQueries jdbcQueries = new JdbcQueries();
         switch (name) {
             case "smi": {
-                java.util.List<Source> sources = jdbcQueries.getSources("all");
+                List<Source> sources = jdbcQueries.getSources("all");
                 for (Source s : sources) {
-                    Dialogs.model.addRow(new Object[]{++id, s.getCountry(), s.getSource(), s.getLink(), s.getIsActive()});
+                    Dialogs.model.addRow(new Object[]{++id, s.getCountry(), s.getSource(), s.getLink(),
+                            s.getPosition(), s.getIsActive()});
                 }
                 break;
             }
             case "excl": {
-                java.util.List<Excluded> excludes = jdbcQueries.getExcludedWords("top-ten");
+                List<Excluded> excludes = jdbcQueries.getExcludedWords("top-ten");
 
                 for (Excluded excluded : excludes) {
                     Object[] row = new Object[]{++id, excluded.getWord()};
@@ -859,7 +884,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 break;
             }
             case "title-excl": {
-                java.util.List<Excluded> excludes = jdbcQueries.getExcludedWords("headline");
+                List<Excluded> excludes = jdbcQueries.getExcludedWords("headline");
 
                 for (Excluded excluded : excludes) {
                     Object[] row = new Object[]{++id, excluded.getWord()};
@@ -925,19 +950,23 @@ public class Dialogs extends JDialog implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            new JdbcQueries().updateSettings(dialogName, getX() + "," + getY());
+            jdbcQueries.updateSettings(dialogName, getX() + "," + getY());
             setVisible(false);
         }
     }
 
     private void saveDialogPosition(String name) {
-        new JdbcQueries().updateSettings(name, getX() + "," + getY());
+        jdbcQueries.updateSettings(name, getX() + "," + getY());
     }
 
     private void setDialogPosition(String name) {
-        String[] dialogXY = new JdbcQueries().getSetting(name).split(",");
+        String[] dialogXY = jdbcQueries.getSetting(name).split(",");
         if (!dialogXY[0].equals("-1")) {
             setLocation(Integer.parseInt(dialogXY[0]), Integer.parseInt(dialogXY[1]));
         }
+    }
+
+    private int getColumnIndex(String name) {
+        return table.getColumnModel().getColumnIndex(name);
     }
 }
