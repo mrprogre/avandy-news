@@ -17,7 +17,8 @@ public class TextLang {
             rightClickMenuAddWordToText, rightClickMenuKeywordsText, rightClickMenuKeywordsToolpitText,
             rightClickMenuExcludedText, rightClickMenuExcludedTooltipText, settingsDialogText,
             assistWelcome, assistQuestion, assistFind, assistAllNews, assistKeywords, assistOneWord,
-            assistPeriod, assistStartUp, reminderToday, reminderTomorrow, reminderWillBe, reminderIs;
+            assistPeriod, assistStartUp, reminderToday, reminderTomorrow, reminderWillBe, reminderIs,
+            checkAddedRss, checkAddedRssFailed;
 
     public void setUiText() {
         String uiLang = Common.getUiLang();
@@ -84,6 +85,8 @@ public class TextLang {
             reminderTomorrow = "Tomorrow";
             reminderWillBe = "will be";
             reminderIs = "is";
+            checkAddedRss = "Source checking.. press OK and wait please!";
+            checkAddedRssFailed = "It's impossible to obtain data from<br/>";
         } else if (uiLang.equals("ru")) {
             amountOfNewsLabelInitText = "Аванди Ньюс Анализ";
             amountOfNewsLabelText = "Всего: ";
@@ -146,6 +149,8 @@ public class TextLang {
             reminderTomorrow = "Завтра";
             reminderWillBe = "исполняется";
             reminderIs = "исполнилось";
+            checkAddedRss = "Проверка источника.. нажмите ОК и немного подождите!";
+            checkAddedRssFailed = "Невозможно прочитать данные из источника<br/>";
         }
     }
 

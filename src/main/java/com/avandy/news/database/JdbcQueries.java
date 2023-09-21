@@ -90,27 +90,25 @@ public class JdbcQueries {
 
     // Вставка нового источника
     public void addNewSource(String source, String link, String country) {
-        if (link.contains("/") && link.contains(".")) {
-            try {
-                String query = "INSERT INTO rss_list(source, link, is_active, user_id, country) VALUES (?, ?, 1, ?, ?)";
-                PreparedStatement statement = connection.prepareStatement(query);
-                statement.setString(1, source);
-                statement.setString(2, link);
-                statement.setInt(3, Login.userId);
-                statement.setString(4, country);
-                statement.executeUpdate();
-                statement.close();
-
-                Common.console("source " + source + " added");
-            } catch (Exception e) {
-                if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE"))
-                    Common.showAlert("Link: " + link + " is already in the list");
-                else
-                    Common.showAlert("При добавлении источника возникла ошибка: " + e.getMessage());
+        try {
+            String query = "INSERT INTO rss_list(source, link, is_active, user_id, country) VALUES (?, ?, 1, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, source);
+            statement.setString(2, link);
+            statement.setInt(3, Login.userId);
+            statement.setString(4, country);
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
+                Common.showAlert("Link: " + link + " is already in the list");
             }
-        } else {
-            Common.showAlert("enter a valid URL");
+            else {
+                Common.showAlert("При добавлении источника возникла ошибка: " + e.getMessage());
+            }
         }
+        Common.console("source " + source + " added");
+        Common.showInfoHtml("Source added<br/>" + source);
     }
 
     // Вставка слова для исключения из анализа частоты употребления слов
@@ -299,28 +297,6 @@ public class JdbcQueries {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, key);
             statement.setInt(2, Login.userId);
-            ResultSet rs = statement.executeQuery();
-
-            while (rs.next()) {
-                setting = rs.getString("value");
-            }
-            rs.close();
-            statement.close();
-        } catch (Exception e) {
-            Common.showAlert("getSettings error: " + e.getMessage());
-        }
-        return setting;
-    }
-
-    // Настройки по ключу
-    public String getSetting(String key, int userId) {
-        String setting = null;
-        String query = "SELECT value FROM settings WHERE key = ? AND user_id = ?";
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, key);
-            statement.setInt(2, userId);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
