@@ -120,12 +120,12 @@ public class Dialogs extends JDialog implements KeyListener {
                     String linkValue = link.getText();
 
                     if (rss.getText().length() > 0 && linkValue.length() > 0) {
-                        if (!Common.checkRss(linkValue)) {
-                            Common.showAlertHtml("It's impossible to obtain data from this source:<br/>" + linkValue);
-                            return;
-                        }
-
                         if (result == JOptionPane.OK_OPTION) {
+                            if (!Common.checkRss(linkValue)) {
+                                Common.showAlertHtml("It's impossible to obtain data from this source:<br/>" + linkValue);
+                                return;
+                            }
+
                             saveDialogPosition(nameXY);
                             new JdbcQueries().addNewSource(rss.getText(), linkValue,
                                     (String) Common.countriesCombobox.getSelectedItem());
