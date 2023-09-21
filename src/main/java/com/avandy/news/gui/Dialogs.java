@@ -117,7 +117,7 @@ public class Dialogs extends JDialog implements KeyListener {
                     }
                 });
 
-                positionCombobox.addItemListener(e -> {
+                positionCombobox.addActionListener(e -> {
                     int countryColumnNum = getColumnIndex("Country");
                     int sourceColumnNum = getColumnIndex("Source");
 
@@ -128,7 +128,10 @@ public class Dialogs extends JDialog implements KeyListener {
                             String countryValue = table.getValueAt(row, countryColumnNum).toString();
                             String sourceValue = table.getValueAt(row, sourceColumnNum).toString();
                             int positionValue = (int) positionCombobox.getSelectedItem();
+
                             jdbcQueries.updateRssPosition(positionValue, countryValue, sourceValue);
+                            this.setVisible(false);
+                            new Dialogs("dialog_sources");
                         }
                     }
                 });
