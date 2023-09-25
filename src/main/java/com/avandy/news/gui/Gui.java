@@ -1762,8 +1762,7 @@ public class Gui extends JFrame {
                     "or other dealings in the software." +
             "</<html>";
 
-            JOptionPane.showMessageDialog(mainTableScrollPane, text, "Поддержать проект " +
-                            "(Всё официально через ИП. С переведённой суммы будет уплачен налог!)",
+            JOptionPane.showMessageDialog(mainTableScrollPane, text, "Поддержать проект",
                     JOptionPane.INFORMATION_MESSAGE, Icons.qrSbp);
         });
 
