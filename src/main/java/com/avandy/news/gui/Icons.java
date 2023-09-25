@@ -8,6 +8,8 @@ import java.net.URL;
 
 @UtilityClass
 public class Icons {
+    public static final ImageIcon qrSbp = new ImageIcon(Toolkit.getDefaultToolkit()
+            .createImage(Icons.class.getResource("/qr.png")));
     public static final URL APP_IN_TRAY_BUTTON_ICON = Icons.class.getResource("/icons/in_tray.png");
     public static final ImageIcon MINUS_RED_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/minus.png")));
@@ -17,10 +19,6 @@ public class Icons {
             .createImage(Icons.class.getResource("/icons/minus3.png")));
     public static final ImageIcon LOGO_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/logo.png")));
-    public static final ImageIcon SEND_EMAIL_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
-            .createImage(Icons.class.getResource("/icons/send.png")));
-    public static final ImageIcon SEND2_EMAIL_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
-            .createImage(Icons.class.getResource("/icons/send2.png")));
     public static final ImageIcon WHEN_OK = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/ok.png")));
     public static final ImageIcon SEARCH_KEYWORDS_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
@@ -65,6 +63,4 @@ public class Icons {
             .createImage(Icons.class.getResource("/icons/add2.png")));
     public static final ImageIcon ASSISTANT_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/assist.png")));
-    public static final ImageIcon RUB_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
-            .createImage(Icons.class.getResource("/icons/rub.png")));
 }

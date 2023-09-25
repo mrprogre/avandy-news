@@ -1735,6 +1735,7 @@ public class Gui extends JFrame {
         JMenuItem info = new JMenuItem("Info", Icons.LOGO_ICON);
         KeyStroke ctrlI = KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         info.setAccelerator(ctrlI);
+
         info.addActionListener(e -> {
             String text = "<html>" +
                     "<b><font color=\"#C4A431\">Avandy News Analysis</font></b><br/>" +
@@ -1745,8 +1746,7 @@ public class Gui extends JFrame {
                     "Реестр российского ПО: запись от 17.05.2023 №17539<br/> " +
                     "<font color=\"#FF7373\">avandy-news.ru</font><br/" +
                     "<font color=\"#fa8e47\">rps_project@mail.ru</font><br/> " +
-                    "<font color=\"#59C9FF\">github.com/mrprogre</font><br/<br/" +
-
+                    "<font color=\"#59C9FF\">github.com/mrprogre</font><br/><br/>" +
                     "Permission is hereby granted, free of charge, to any person obtaining a copy of this software<br/>" +
                     "and associated documentation files (the \"Software\"), to deal in the Software without restriction,<br/>" +
                     "including without limitation the rights to use, copy, modify, merge, publish, distribute,<br/>" +
@@ -1756,13 +1756,15 @@ public class Gui extends JFrame {
 
                     "The software is provided \"as is\", without warranty of any kind, express or implied, including<br/>" +
                     "but not limited to the warranties of merchantability, fitness for a particular purpose and<br/>" +
-                    "noninfringement. In no event shall the authors or copyright holders be liable<br/>" +
-                    "for any claim, damages or other liability, whether in an action of contract, tort or otherwise,<br/>" +
-                    "arising from, out of or in connection with the software or the use or other dealings in the software." +
+                    "noninfringement. In no event shall the authors or copyright holders be liable for any claim,<br/>" +
+                    "damages or other liability, whether in an action of contract, tort or otherwise,<br/>" +
+                    "arising from, out of or in connection with the software or the use <br/>" +
+                    "or other dealings in the software." +
             "</<html>";
 
-            JOptionPane.showMessageDialog(mainTableScrollPane, text, "Information",
-                    JOptionPane.INFORMATION_MESSAGE, Icons.MANUAL_ICON);
+            JOptionPane.showMessageDialog(mainTableScrollPane, text, "Поддержать проект " +
+                            "(Всё официально через ИП. С переведённой суммы будет уплачен налог!)",
+                    JOptionPane.INFORMATION_MESSAGE, Icons.qrSbp);
         });
 
         JMenuItem manual = new JMenuItem("Manual", Icons.MANUAL_ICON);
