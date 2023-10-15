@@ -648,6 +648,9 @@ public class Gui extends JFrame {
         exitBtn.addActionListener((e) -> {
             Search.isSearchFinished.set(true);
             Common.saveState();
+            // сохранение текущей позиции приложения при закрытии
+            jdbcQueries.updateSettings("gui_x", String.valueOf(getX()));
+            jdbcQueries.updateSettings("gui_y", String.valueOf(getY()));
             sqLite.closeConnection();
             System.exit(0);
         });
