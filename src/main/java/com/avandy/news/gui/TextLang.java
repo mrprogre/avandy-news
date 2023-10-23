@@ -92,8 +92,8 @@ public class TextLang {
             reminderIs = "is";
             checkAddedRss = "Source checking.. press OK and wait please!";
             checkAddedRssFailed = "It's impossible to obtain data from<br/>";
-            register = "Computer program registry: Num 2023615114 dated 10.03.2023";
-            registerRusPro = "Register of Russian software: Num 17539 dated 17.05.2023";
+            register = "Computer program registry: num 2023615114 dated 10.03.2023";
+            registerRusPro = "Register of Russian software: num 17539 dated 17.05.2023";
         } else if (uiLang.equals("ru")) {
             name = "Аванди Ньюс Анализ";
             owner = "Разработчик: Чернявский Дмитрий Андреевич";
