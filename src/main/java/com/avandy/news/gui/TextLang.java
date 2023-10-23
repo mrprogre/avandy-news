@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TextLang {
-    public String amountOfNewsLabelInitText, findInLabelText, latestNewsCheckboxText, lblKeywordsSearchText,
+    public String name, owner, ver, dat, donate, register, registerRusPro, amountOfNewsLabelInitText, findInLabelText, latestNewsCheckboxText, lblKeywordsSearchText,
             newsInArchiveLabelText, loginLabelText, loginLabelHelloText, loginLabelPwdText, selectText, reloadText,
             reloadDbText, pathToDatabaseText, amountOfNewsLabelText, totalText, transparencyText, languageText,
             interfaceXText, interfaceYText, assistantText, autoFeelText, tableFontNameText, fontSizeText, rowHeightText,
@@ -24,6 +24,11 @@ public class TextLang {
         String uiLang = Common.getUiLang();
 
         if (uiLang.equals("en")) {
+            name = "Avandy News Analysis";
+            owner = "Developer: Chernyavskiy Dmitry Andreevich";
+            ver = "Version: ";
+            dat = " dated ";
+            donate = "Donate";
             amountOfNewsLabelInitText = "Avandy News Analysis";
             amountOfNewsLabelText = "total: ";
             findInLabelText = "find in";
@@ -87,7 +92,14 @@ public class TextLang {
             reminderIs = "is";
             checkAddedRss = "Source checking.. press OK and wait please!";
             checkAddedRssFailed = "It's impossible to obtain data from<br/>";
+            register = "Computer program registry: Num 2023615114 dated 10.03.2023";
+            registerRusPro = "Register of Russian software: Num 17539 dated 17.05.2023";
         } else if (uiLang.equals("ru")) {
+            name = "Аванди Ньюс Анализ";
+            owner = "Разработчик: Чернявский Дмитрий Андреевич";
+            ver = "Версия: ";
+            dat = " дата ";
+            donate = "Поддержать проект (Официальный перевод ИП. С данной суммы мы уплатим налог)";
             amountOfNewsLabelInitText = "Аванди Ньюс Анализ";
             amountOfNewsLabelText = "Всего: ";
             findInLabelText = "Поиск в";
@@ -151,6 +163,8 @@ public class TextLang {
             reminderIs = "исполнилось";
             checkAddedRss = "Проверка источника.. нажмите ОК и немного подождите!";
             checkAddedRssFailed = "Невозможно прочитать данные из источника<br/>";
+            register = "Реестр программ для ЭВМ: запись 2023615114 от 10.03.2023";
+            registerRusPro = "Реестр российского ПО: запись 17539 от 17.05.2023";
         }
     }
 

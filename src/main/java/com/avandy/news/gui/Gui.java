@@ -1741,12 +1741,12 @@ public class Gui extends JFrame {
 
         info.addActionListener(e -> {
             String text = "<html>" +
-                    "<b><font color=\"#C4A431\">Avandy News Analysis</font></b><br/>" +
-                    "Version: <b><font color=\"#31b547\">" + Main.APP_VERSION + "</font></b>" +
-                    " dated <b><font color=\"#31b547\">" + Main.APP_VERSION_DATE + "</b></font><br/>" +
-                    "Developer, owner: Chernyavskiy Dmitry Andreevich <br/>" +
-                    "Реестр программ для ЭВМ: № 2023615114 от 10.03.2023<br/>" +
-                    "Реестр российского ПО: запись от 17.05.2023 №17539<br/> " +
+                    "<b><font color=\"#C4A431\">" + name + "</font></b><br/>" +
+                    ver + " <b><font color=\"#31b547\">" + Main.APP_VERSION + "</font></b>" +
+                    dat + "<b><font color=\"#31b547\">" + Main.APP_VERSION_DATE + "</b></font><br/>" +
+                    owner + "<br/>" +
+                    register + "<br/>" +
+                    registerRusPro + "<br/>" +
                     "<font color=\"#FF7373\">avandy-news.ru</font><br/" +
                     "<font color=\"#fa8e47\">rps_project@mail.ru</font><br/> " +
                     "<font color=\"#59C9FF\">github.com/mrprogre</font><br/><br/>" +
@@ -1765,7 +1765,7 @@ public class Gui extends JFrame {
                     "or other dealings in the software." +
             "</<html>";
 
-            JOptionPane.showMessageDialog(mainTableScrollPane, text, "Поддержать проект",
+            JOptionPane.showMessageDialog(mainTableScrollPane, text, donate,
                     JOptionPane.INFORMATION_MESSAGE, Icons.qrSbp);
         });
 
