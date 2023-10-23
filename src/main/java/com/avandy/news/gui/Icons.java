@@ -13,6 +13,8 @@ public class Icons {
     public static final URL APP_IN_TRAY_BUTTON_ICON = Icons.class.getResource("/icons/in_tray.png");
     public static final ImageIcon MINUS_RED_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/minus.png")));
+    public static final ImageIcon GAME_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
+            .createImage(Icons.class.getResource("/icons/in_tray.png")));
     public static final ImageIcon MINUS_BLUE_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/minus2.png")));
     public static final ImageIcon MINUS_GREEN_ICON = new ImageIcon(Toolkit.getDefaultToolkit()

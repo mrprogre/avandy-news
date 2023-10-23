@@ -61,6 +61,11 @@ public class Common {
         if (!manualIsExists.exists()) {
             copyFiles(Common.class.getResource("/manual.docx"), DIRECTORY_PATH + "manual.docx");
         }
+        File gameIsExists = new File(DIRECTORY_PATH + "brain-shake-game.jar");
+        if (!gameIsExists.exists()) {
+            copyFiles(Common.class.getResource("/brain-shake-game.jar"), DIRECTORY_PATH +
+                    "brain-shake-game.jar");
+        }
     }
 
     public void showGui() {

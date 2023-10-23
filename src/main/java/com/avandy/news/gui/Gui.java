@@ -1763,7 +1763,7 @@ public class Gui extends JFrame {
                     "damages or other liability, whether in an action of contract, tort or otherwise,<br/>" +
                     "arising from, out of or in connection with the software or the use <br/>" +
                     "or other dealings in the software." +
-            "</<html>";
+                    "</<html>";
 
             JOptionPane.showMessageDialog(mainTableScrollPane, text, donate,
                     JOptionPane.INFORMATION_MESSAGE, Icons.qrSbp);
@@ -1832,11 +1832,25 @@ public class Gui extends JFrame {
             }
         }).start());
 
+        JMenuItem game = new JMenuItem("Play game", Icons.GAME_ICON);
+        KeyStroke ctrlF5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        game.setAccelerator(ctrlF5);
+        game.addActionListener(e -> {
+            try {
+                String jar = Common.DIRECTORY_PATH + "brain-shake-game.jar";
+
+                Runtime.getRuntime().exec("java -jar " + jar);
+            } catch (IOException ioe) {
+                Common.showAlert(ioe.getMessage());
+            }
+        });
+
         helpMenu.add(info);
         helpMenu.add(manual);
         helpMenu.add(support);
         helpMenu.add(showAssistant);
         helpMenu.add(checkForUpdates);
+        helpMenu.add(game);
         return helpMenu;
     }
 }
