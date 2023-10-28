@@ -1,6 +1,7 @@
 package com.avandy.news.utils;
 
 import com.avandy.news.database.JdbcQueries;
+import com.avandy.news.gui.Gui;
 import com.avandy.news.gui.Icons;
 
 import javax.swing.*;
@@ -53,18 +54,23 @@ public class Login {
 
     public void createUser() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2, 0, 5));
+        panel.setLayout(new GridLayout(4, 2, 0, 5));
         JLabel userLabel = new JLabel("Username");
         JTextField user = new JTextField();
         JLabel passwordLabel = new JLabel("Password");
         JPasswordField passwordField = new JPasswordField();
         JLabel countryLabel = new JLabel("Country");
+        JComboBox<String> langCombobox = new JComboBox<>(Gui.interfaceLanguages);
+        langCombobox.setSelectedItem(1);
+
         panel.add(userLabel);
         panel.add(user);
         panel.add(passwordLabel);
         panel.add(passwordField);
         panel.add(countryLabel);
         panel.add(Common.countriesCombobox);
+        panel.add(new JLabel("Language"));
+        panel.add(langCombobox);
 
         String[] menu = new String[]{"cancel", "add"};
         int action = JOptionPane.showOptionDialog(null, panel, "Add user",
@@ -79,7 +85,7 @@ public class Login {
                 usersCombobox = new JComboBox<>(jdbcQueries.getAllUsers().toArray());
                 username = user.getText();
                 userId = jdbcQueries.getUserIdByUsername(username);
-                jdbcQueries.initUser((String) Common.countriesCombobox.getSelectedItem());
+                jdbcQueries.initUser((String) Common.countriesCombobox.getSelectedItem(), (String) langCombobox.getSelectedItem());
             }
         } else if (action == 1 && (user.getText().length() < USERNAME_LENGTH_MIN || user.getText().length() > USERNAME_LENGTH_MAX)) {
             Common.showAlert("The username length between " + USERNAME_LENGTH_MIN + " and " + USERNAME_LENGTH_MAX + " chars");

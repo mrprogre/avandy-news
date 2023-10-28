@@ -682,7 +682,7 @@ public class JdbcQueries {
         try {
             PreparedStatement statement;
             String query;
-            if (country.equals("All")) {
+            if (country.equals("all")) {
                 query = "SELECT query FROM init_rss";
                 statement = connection.prepareStatement(query);
             } else {
@@ -1026,7 +1026,7 @@ public class JdbcQueries {
         }
     }
 
-    public void initUser(String userCountry) {
+    public void initUser(String userCountry, String lang) {
         List<String> data = getInitQueries();
         List<String> rssList = getRssQueries(userCountry);
         data.addAll(rssList);
@@ -1039,6 +1039,7 @@ public class JdbcQueries {
                 statement.setInt(1, Login.userId);
                 statement.executeUpdate();
             }
+            updateSettings("lang", lang);
             connection.setAutoCommit(true);
         } catch (SQLException e) {
             Common.showAlert("initUser error: " + e.getMessage());

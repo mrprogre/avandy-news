@@ -54,6 +54,8 @@ public class Gui extends JFrame {
     public static final Color guiFontColor = new Color(255, 255, 153);
     public static final String[] INTERVALS = {"1 min", "5 min", "15 min", "30 min", "45 min", "1 hour", "2 hours",
             "4 hours", "8 hours", "12 hours", "24 hours", "48 hours", "72 hours", "all"};
+    public static final String [] interfaceLanguages = new String[]{"en", "ru"};
+    public static final String [] onOff = new String[]{"on", "off"};
     public static final JComboBox<Integer> WEIGHT_COMBOBOX =
             new JComboBox<>(new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     public static final AtomicBoolean WAS_CLICK_IN_TABLE_FOR_ANALYSIS = new AtomicBoolean(false);
@@ -648,9 +650,7 @@ public class Gui extends JFrame {
         exitBtn.addActionListener((e) -> {
             Search.isSearchFinished.set(true);
             Common.saveState();
-            // сохранение текущей позиции приложения при закрытии
-            jdbcQueries.updateSettings("gui_x", String.valueOf(getX()));
-            jdbcQueries.updateSettings("gui_y", String.valueOf(getY()));
+            saveCurrentGuiXY();
             sqLite.closeConnection();
             System.exit(0);
         });
@@ -1029,6 +1029,12 @@ public class Gui extends JFrame {
         this.setVisible(true);
     }
 
+    // сохранение текущей позиции приложения при закрытии
+    private void saveCurrentGuiXY() {
+        jdbcQueries.updateSettings("gui_x", String.valueOf(getX()));
+        jdbcQueries.updateSettings("gui_y", String.valueOf(getY()));
+    }
+
     private static boolean isRussian() {
         return Common.getUiLang().equals("ru");
     }
@@ -1180,13 +1186,13 @@ public class Gui extends JFrame {
             }
         });
 
-        JComboBox<String> onOffAssistant = new JComboBox<>(new String[]{"on", "off"});
+        JComboBox<String> onOffAssistant = new JComboBox<>(onOff);
         onOffAssistant.setSelectedItem(isAssistValue);
 
-        JComboBox<String> onOffAutoFeel = new JComboBox<>(new String[]{"on", "off"});
+        JComboBox<String> onOffAutoFeel = new JComboBox<>(onOff);
         onOffAutoFeel.setSelectedItem(isAutoFeel);
 
-        JComboBox<String> langCombobox = new JComboBox<>(new String[]{"en", "ru"});
+        JComboBox<String> langCombobox = new JComboBox<>(interfaceLanguages);
         langCombobox.setSelectedItem(langValue);
 
         // Выбор цвета фона таблиц
@@ -1292,6 +1298,7 @@ public class Gui extends JFrame {
             jdbcQueries.updateSettings("gui_x", xTextField.getText());
             jdbcQueries.updateSettings("gui_y", yTextField.getText());
 
+            saveCurrentGuiXY();
             refreshGui();
         }
     }
