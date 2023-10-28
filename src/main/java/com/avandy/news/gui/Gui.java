@@ -1027,6 +1027,10 @@ public class Gui extends JFrame {
         setJMenuBar(menuBar);
         // Отображение приложения
         this.setVisible(true);
+
+        if (Login.username.equals("demo")) {
+            new Thread(this::createUserAnimation).start();
+        }
     }
 
     // сохранение текущей позиции приложения при закрытии
@@ -1860,4 +1864,21 @@ public class Gui extends JFrame {
         helpMenu.add(game);
         return helpMenu;
     }
+
+    private void createUserAnimation() {
+        loginLabel.setForeground(Color.RED);
+        loginLabel.setText("create user");
+        try {
+            for (int i = 0; i < 10; i++) {
+                Thread.sleep(500);
+                loginLabel.setEnabled(true);
+                Thread.sleep(500);
+                loginLabel.setEnabled(false);
+            }
+        } catch (InterruptedException e) {
+            Common.showAlert(e.getMessage());
+        }
+        loginLabel.setForeground(guiFontColor);
+    }
+
 }
