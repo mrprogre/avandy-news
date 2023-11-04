@@ -30,10 +30,9 @@ import static com.avandy.news.gui.TextLang.*;
 @UtilityClass
 public class Common {
     public static Gui gui;
-    public static final String DIRECTORY_PATH = System.getProperty("user.home") +
-            File.separator + "News" + File.separator;
-    public static final String DATABASE_PATH = System.getProperty("user.home") +
-            File.separator + "News" + File.separator + "news.db";
+    private static final String USER_HOME_DIR = System.getProperty("user.home") + File.separator;
+    public static final String DIRECTORY_PATH = USER_HOME_DIR + "News" + File.separator;
+    public static final String DATABASE_PATH = USER_HOME_DIR + "News" + File.separator + "news.db";
     public final AtomicBoolean IS_SENDING = new AtomicBoolean(true);
     public final HashMap<String, Integer> guiSettings = new HashMap<>();
     public final HashMap<String, Color> guiColors = new HashMap<>();
@@ -65,6 +64,10 @@ public class Common {
         if (!gameIsExists.exists()) {
             copyFiles(Common.class.getResource("/brain-shake-game.jar"), DIRECTORY_PATH +
                     "brain-shake-game.jar");
+        }
+        File sqliteConfigIsExists = new File(USER_HOME_DIR + ".sqliterc");
+        if (!sqliteConfigIsExists.exists()) {
+            copyFiles(Common.class.getResource("/.sqliterc"), USER_HOME_DIR + ".sqliterc");
         }
     }
 

@@ -1427,6 +1427,7 @@ public class Gui extends JFrame {
         settings.addActionListener(x -> getSettingsDialog());
 
         JMenuItem sqlite = new JMenuItem("Sqlite", iconItem2);
+        sqlite.setToolTipText("Press CTRL+v in SQLIte IDE to insert database path");
         KeyStroke ctrlL = KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
         sqlite.setAccelerator(ctrlL);
         sqlite.addActionListener(x -> showSQLiteIde());
