@@ -1,6 +1,6 @@
 # Avandy News Analysis
 ![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)
-![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)(https://avandy-news.ru/)
+[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://avandy-news.ru/)
 
 Десктопная программа, которая анализирует частоту употребления слов в новостных заголовках для понимания "картины дня" за выбранный период, а также рассчитывает общий эмоциональный фон по заранее установленным правилам. Имеется возможность оффлайн работы благодаря встроенной СУБД SQLite.
 
