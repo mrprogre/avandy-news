@@ -6,8 +6,8 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -18,8 +18,7 @@ public class Parser {
 
     public SyndFeed parseFeed(String url) throws IllegalArgumentException, FeedException, IOException {
         timeStart = LocalTime.now();
-        URLConnection urlConnection = new URL(url).openConnection();
-        urlConnection.setConnectTimeout(100);
+        InputStream urlConnection = new URL(url).openConnection().getInputStream();
         XmlReader reader = new XmlReader(urlConnection);
 
         // подсчёт времени поиска
