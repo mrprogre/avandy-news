@@ -6,7 +6,7 @@ import com.avandy.news.gui.Gui;
 import com.avandy.news.model.*;
 import com.avandy.news.utils.Common;
 import com.avandy.news.utils.Parser;
-import com.sun.syndication.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntry;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -87,11 +87,10 @@ public class Search {
                     Gui.searchAnimationLabel.setText("Progress: [" + processPercent + "%] " + source.getSource());
 
                     try {
-                        for (Object message : new Parser().parseFeed(source.getLink()).getEntries()) {
-                            SyndEntry entry = (SyndEntry) message;
-                            String title = entry.getTitle();
-                            Date pubDate = entry.getPublishedDate();
-                            String newsDescribe = entry.getDescription().getValue()
+                        for (SyndEntry message : new Parser().parseFeed(source.getLink()).getEntries()) {
+                            String title = message.getTitle();
+                            Date pubDate = message.getPublishedDate();
+                            String newsDescribe = message.getDescription().getValue()
                                     .trim()
                                     .replaceAll(("<p>|</p>|<br />|&#"), "");
                             if (Common.isHref(newsDescribe)) newsDescribe = title;
@@ -100,7 +99,7 @@ public class Search {
                                     title,
                                     source.getSource(),
                                     newsDescribe,
-                                    entry.getLink(),
+                                    message.getLink(),
                                     Headline.DATE_FORMAT.format(pubDate)
                             );
 

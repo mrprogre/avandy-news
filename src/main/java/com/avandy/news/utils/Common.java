@@ -7,8 +7,8 @@ import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.Headline;
 import com.avandy.news.search.Search;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.io.FeedException;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.io.FeedException;
 import lombok.experimental.UtilityClass;
 
 import javax.swing.*;
@@ -759,9 +759,8 @@ public class Common {
 
     public static boolean checkRss(String link) {
         try {
-            for (Object message : new Parser().parseFeed(link).getEntries()) {
-                SyndEntry entry = (SyndEntry) message;
-                String title = entry.getTitle();
+            for (SyndEntry message : new Parser().parseFeed(link).getEntries()) {
+                String title = message.getTitle();
                 return (title != null && title.length() > 0);
             }
         } catch (FeedException | IOException ignored) {
