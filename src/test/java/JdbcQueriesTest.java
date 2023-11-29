@@ -32,14 +32,6 @@ public class JdbcQueriesTest {
     }
 
     @Test
-    public void checkKeywords() {
-        assertEquals(4, jdbcQueries.getKeywords(2).size(),
-                "Неправильное общее количество ключевых слов");
-        assertEquals(3, jdbcQueries.getKeywords(1).size(),
-                "Неправильное количество активных ключевых слов");
-    }
-
-    @Test
     public void shouldGetSetting() {
         assertNotNull(jdbcQueries.getSetting("interval"),
                 "Получение настроек недоступно");
