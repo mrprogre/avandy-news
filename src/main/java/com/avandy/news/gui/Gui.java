@@ -1007,12 +1007,24 @@ public class Gui extends JFrame {
         });
         animation(loginLabel);
 
+        JLabel botLabel = new JLabel("telegram bot");
+        botLabel.setForeground(new Color(66, 202,232));
+        botLabel.setEnabled(false);
+        animation(botLabel);
+        botLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openPage("https://t.me/AvandyNewsBot");
+            }
+        });
+
         // Создание главного меню
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createFileMenu());
         menuBar.add(createViewMenu());
         menuBar.add(createShowUrl());
         menuBar.add(createHelp());
+        menuBar.add(botLabel);
 
         // Форматирование меню
         menuBar.add(Box.createHorizontalGlue());
