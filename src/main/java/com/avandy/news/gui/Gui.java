@@ -1007,7 +1007,7 @@ public class Gui extends JFrame {
         });
         animation(loginLabel);
 
-        JLabel botLabel = new JLabel("telegram bot");
+        JLabel botLabel = new JLabel("t.me/bot");
         botLabel.setForeground(new Color(66, 202,232));
         botLabel.setEnabled(false);
         animation(botLabel);
