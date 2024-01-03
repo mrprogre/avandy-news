@@ -692,7 +692,6 @@ public class Common {
         wordsCount.entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEach(x -> Gui.modelTopTen.addRow(new Object[]{x.getKey(), x.getValue()}));
-
     }
 
     // поиск общей подстроки (полно всяких: ный, ять, акой, ать)
