@@ -10,6 +10,7 @@ import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.FeedException;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 import javax.swing.*;
 import java.awt.*;
@@ -660,7 +661,7 @@ public class Common {
 
         for (Map.Entry<String, Integer> topTenWord : wordsCount.entrySet()) {
             for (Map.Entry<String, Integer> topTenWord2 : wordsCount.entrySet()) {
-                int compare = new JaroWinklerDistance().compare(topTenWord.getKey(), topTenWord2.getKey());
+                int compare = jaroWinklerCompare(topTenWord.getKey(), topTenWord2.getKey());
 
                 if (compare != 100 && compare >= jaroWinklerLevel && !excluded.contains(topTenWord.getKey())) {
                     String commonString = longestCommonSubstring(topTenWord.getKey(), topTenWord2.getKey());
@@ -740,7 +741,7 @@ public class Common {
         if (String1.length() > 0 && String2.length() > 0) {
             if (result == 1) {
                 Common.showInfo("String similarity [" + String1 + " : " + String2 + "] is " +
-                        new JaroWinklerDistance().compare(String1, String2) + "%");
+                        jaroWinklerCompare(String1, String2) + "%");
                 compareTwoStrings();
             }
         }
@@ -766,6 +767,10 @@ public class Common {
             return false;
         }
         return false;
+    }
+
+    public static int jaroWinklerCompare(String text1, String text2) {
+        return (int) Math.round((1 - new JaroWinklerDistance().apply(text1, text2)) * 100);
     }
 
 }
