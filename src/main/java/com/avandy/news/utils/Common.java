@@ -661,7 +661,7 @@ public class Common {
 
         for (Map.Entry<String, Integer> topTenWord : wordsCount.entrySet()) {
             for (Map.Entry<String, Integer> topTenWord2 : wordsCount.entrySet()) {
-                int compare = jaroWinklerCompare(topTenWord.getKey(), topTenWord2.getKey());
+                double compare = jaroWinklerCompare(topTenWord.getKey(), topTenWord2.getKey());
 
                 if (compare != 100 && compare >= jaroWinklerLevel && !excluded.contains(topTenWord.getKey())) {
                     String commonString = longestCommonSubstring(topTenWord.getKey(), topTenWord2.getKey());
