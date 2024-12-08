@@ -16,45 +16,63 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
     <title>Avandy News</title>
 
-    <link rel="icon" href="./assets/images/logo.png" />
+    <link rel="icon" href="./assets/images/logo.png"/>
     <script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js"></script>
 </head>
 
 <body>
+<div class="container" style="margin-bottom: 50px;">
+    <br/>
+    <a href="https://avandy-news.ru/index-en.html" style="text-decoration: none;" class="text"><b>home</b></a>
+    <br/><br/>
+
     <div class="container" style="margin-bottom: 50px;">
-        <br />
-        <a href="https://avandy-news.ru/index-en.html" style="text-decoration: none;" class="text"><b>home</b></a>
-        <br /><br />
-
-        <div class="container" style="margin-bottom: 50px;">
-            <p>Пример поиска новостей по <b>Топ 20 слов в СМИ</b>.
-                <br />
-                После выполнения команды <b>/top</b> нажата кнопка <b>Подробнее</b>, а далее нажата кнопка с фамилией <b>Собянин</b>.
-                <br />
-                Далее можно нажимать на остальные кнопки и новости будут появляться в одном и том же окне.
-            </p>
-            <img src="./assets/images/bot/search-top.png" alt="Топ поиск" style="margin-left: 10px;" />
-        </div>
-
-
-        <div class="container" style="margin-bottom: 50px;">
-            <p>Пример поиска по фразе <b>ключевая ставка</b> написанной в чате.
-            </p>
-            <img src="./assets/images/bot/search-in-chat.png" alt="Поиск в чате" style="margin-left: 10px;" />
-        </div>
-
-        <div class="container" style="margin-bottom: 50px;">
-            <p>В <b>/settings</b> по команде <b>/theme</b>
-                <br />
-                можно выбрать одну из шести тем внешнего вида новостей
-                <br />
-                Пример темы номер 6 (время без даты, между новостями пустая строка и т.д.)
-            </p>
-            <img src="./assets/images/bot/themes.png" alt="Темы новостей" style="margin-left: 10px;" />
-        </div>
-
+        <p>1. Поиск <b>по сохранённым словам</b> с применением символа *.<br/>
+            Можно сохранить до 64 слов включительно.
+        </p>
+        <img src="./assets/images/bot/search-keywords.png" alt="Поиск в чате" style="margin-left: 10px;"/>
     </div>
 
+    <div class="container" style="margin-bottom: 50px;">
+        <p>2. Пример поиска новостей по <b>Топ 20 слов в СМИ</b>.
+            <br/>
+            После выполнения команды <b>/top</b> нажата кнопка <b>Подробнее</b>, а далее нажата кнопка с фамилией <b>Собянин</b>.
+        </p>
+        <img src="./assets/images/bot/search-top.png" alt="Топ поиск" style="margin-left: 10px;"/>
+        <p>
+            Можно нажимать на другие слова и новости будут появляться в том же окне. Очень удобно!
+        </p>
+    </div>
+
+
+    <div class="container" style="margin-bottom: 50px;">
+        <p>3. Поиск по фразе <b>ключевая ставка</b>, написанной в чат,
+            и использование символа <b>*</b> для усиления поиска.
+        </p>
+        <img src="./assets/images/bot/search-in-chat.png" alt="Поиск в чате" style="margin-left: 10px;"/>
+    </div>
+
+
+    <div class="container" style="margin-bottom: 50px;">
+        <p>4. Поиск <b>всех новостей с фильтрацией</b> и добавление слов-исключений
+            для фильтрации заголовков при повторном поиске.<br/>
+            Слова-исключения можно писать не полностью - без окончаний, для более мощной фильтрации.
+        </p>
+        <img src="./assets/images/bot/search-all-filtered.png" alt="Поиск в чате" style="margin-left: 10px;"/>
+    </div>
+
+
+    <div class="container" style="margin-bottom: 50px;">
+        <p>В <b>/settings</b> по команде <b>/theme</b>
+            <br/>
+            можно выбрать одну из шести тем внешнего вида новостей
+            <br/>
+            Пример темы номер 6 (время без даты, между новостями пустая строка и т.д.)
+        </p>
+        <img src="./assets/images/bot/themes.png" alt="Темы новостей" style="margin-left: 10px;"/>
+    </div>
+
+</div>
 
 
 </body>
