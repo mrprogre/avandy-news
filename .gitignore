@@ -11,3 +11,4 @@ target/
 *.ipr
 /src/main/resources/news.db-journal
 /docs/
+/out/
