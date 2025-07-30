@@ -88,7 +88,8 @@ public class Search {
                     if (isStop.get()) return;
 
                     processPercent = (int) Math.round((double) q++ / (sourcesListRome.size() + 1) * 100);
-                    Gui.searchAnimationLabel.setText("Progress: [" + (processPercent / 2) + "%] " + source.getSource());
+                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.5) + "%] " +
+                            source.getSource());
 
                     try {
                         for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
@@ -184,7 +185,8 @@ public class Search {
                     if (isStop.get()) return;
 
                     processPercent = (int) Math.round((double) q++ / (sourcesListJsoup.size() + 1) * 100);
-                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.3) + "%] " + source.getSource());
+                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.5) + "%] " +
+                            source.getSource());
 
                     try {
                         for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
