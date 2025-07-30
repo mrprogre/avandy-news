@@ -4,8 +4,8 @@ import com.avandy.news.database.JdbcQueries;
 import com.avandy.news.database.SQLite;
 import com.avandy.news.gui.Gui;
 import com.avandy.news.model.*;
+import com.avandy.news.parser.ParserRome;
 import com.avandy.news.utils.Common;
-import com.avandy.news.utils.Parser;
 import com.rometools.rome.feed.synd.SyndEntry;
 
 import java.sql.SQLException;
@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 import static com.avandy.news.gui.TextLang.*;
 
 public class Search {
-    private static final SimpleDateFormat SQL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+    private static final SimpleDateFormat SQL_DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private int wordFreqMatches = 3;
     private final SQLite sqLite;
     private final JdbcQueries jdbcQueries;
@@ -73,21 +74,24 @@ public class Search {
             try {
                 Headline headline;
                 List<Excluded> excludedTitles = jdbcQueries.getExcludedWords("headline");
-                List<Source> sourcesList = jdbcQueries.getSources("active");
+                List<Source> sourcesListRome = jdbcQueries.getSourcesRome("active");
+                List<Source> sourcesListJsoup = jdbcQueries.getSourcesJsoup("active");
                 sqLite.transaction("BEGIN TRANSACTION");
 
                 // search animation
                 new Thread(Common::fillProgressLine).start();
 
                 int q = 1;
-                for (Source source : sourcesList) {
+                int processPercent;
+                // ROME
+                for (Source source : sourcesListRome) {
                     if (isStop.get()) return;
 
-                    int processPercent = (int) Math.round((double) q++ / (sourcesList.size() + 1) * 100);
-                    Gui.searchAnimationLabel.setText("Progress: [" + processPercent + "%] " + source.getSource());
+                    processPercent = (int) Math.round((double) q++ / (sourcesListRome.size() + 1) * 100);
+                    Gui.searchAnimationLabel.setText("Progress: [" + (processPercent / 2) + "%] " + source.getSource());
 
                     try {
-                        for (SyndEntry message : new Parser().parseFeed(source.getLink()).getEntries()) {
+                        for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
                             String title = message.getTitle();
                             Date pubDate = message.getPublishedDate();
                             String newsDescribe = message.getDescription().getValue()
@@ -128,7 +132,7 @@ public class Search {
                                             continue;
                                         }
 
-                                        if (Gui.findWord.length() == 0) {
+                                        if (Gui.findWord.isEmpty()) {
                                             // замена не интересующих заголовков в UI на # + слово исключение
                                             for (Excluded excludedTitle : excludedTitles) {
                                                 if (excludedTitle.getWord().length() > 2 && newsTitle.contains(excludedTitle.getWord())) {
@@ -153,26 +157,104 @@ public class Search {
                             } else if (isWords) {
                                 List<Keyword> keywords = jdbcQueries.getKeywords(1);
 
-                                if (keywords.size() > 0) {
-                                    for (Keyword keyword : keywords) {
-                                        if (headline.getTitle().toLowerCase().contains(keyword.getWord().toLowerCase())
-                                                && headline.getTitle().length() > 15) {
+                                if (!keywords.isEmpty()) {
+                                    searchByKeywords(searchType, keywords, headline, isOnlyLastNews, title, pubDate);
+                                } else {
+                                    Common.showAlert("No keywords to search!");
+                                    Gui.stopKeywordsSearch.doClick();
+                                    Gui.modelMain.setRowCount(0);
+                                    return;
+                                }
+                            }
+                            if (isStop.get()) return;
+                        }
+                        if (!Gui.isOnlyLastNews) {
+                            jdbcQueries.removeFromTitles();
+                        }
+                    } catch (Exception e) {
+                        String smi = source.getLink()
+                                .replaceAll(("https://|http://|www."), "");
+                        smi = smi.substring(0, smi.indexOf("/"));
+                        Common.console(smi + " is not available");
+                    }
+                }
 
-                                            // отсеиваем новости которые были обнаружены ранее
-                                            if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
-                                                continue;
+                // JSOUP
+                for (Source source : sourcesListJsoup) {
+                    if (isStop.get()) return;
+
+                    processPercent = (int) Math.round((double) q++ / (sourcesListJsoup.size() + 1) * 100);
+                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.3) + "%] " + source.getSource());
+
+                    try {
+                        for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
+                            String title = message.getTitle();
+                            Date pubDate = message.getPublishedDate();
+                            String newsDescribe = message.getDescription().getValue()
+                                    .trim()
+                                    .replaceAll(("<p>|</p>|<br />|&#"), "");
+                            if (Common.isHref(newsDescribe)) newsDescribe = title;
+
+                            headline = new Headline(
+                                    title,
+                                    source.getSource(),
+                                    newsDescribe,
+                                    message.getLink(),
+                                    Headline.DATE_FORMAT.format(pubDate)
+                            );
+
+                            if (isWord || isTopTen) {
+                                Gui.findWord = Gui.keyword.getText().toLowerCase();
+                                String newsTitle = headline.getTitle().toLowerCase();
+
+                                // вставка всех без исключения новостей в архив
+                                saveToArchive(headline, title, pubDate);
+
+                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > 15) {
+                                    int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
+
+                                    if (dateDiff != 0) {
+                                        // Данные за период для таблицы топ-10 без отсева заголовков
+                                        getTopTenData(headline.getTitle());
+                                    }
+
+                                    if (isTopTen) {
+                                        if (dateDiff != 0) {
+                                            searchProcess(headline, searchType, isOnlyLastNews);
+                                        }
+                                    } else {
+                                        //отсеиваем новости, которые уже были найдены ранее при включенном чекбоксе
+                                        if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
+                                            continue;
+                                        }
+
+                                        if (Gui.findWord.isEmpty()) {
+                                            // замена не интересующих заголовков в UI на # + слово исключение
+                                            for (Excluded excludedTitle : excludedTitles) {
+                                                if (excludedTitle.getWord().length() > 2 && newsTitle.contains(excludedTitle.getWord())) {
+                                                    headline.setTitle("# " + excludedTitle);
+                                                }
                                             }
 
-                                            //Data for a table
-                                            int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
-
-                                            if (dateDiff != 0) {
-                                                saveToArchive(headline, title, pubDate);
+                                            if (dateDiff != 0 && !headline.getTitle().contains("#")) {
                                                 searchProcess(headline, searchType, isOnlyLastNews);
-                                                getTopTenData(headline.getTitle());
+                                            }
+
+                                            if (dateDiff != 0 && headline.getTitle().contains("#")) {
+                                                ++excludedCount;
+                                            }
+                                        } else {
+                                            if (dateDiff != 0) {
+                                                searchProcess(headline, searchType, isOnlyLastNews);
                                             }
                                         }
                                     }
+                                }
+                            } else if (isWords) {
+                                List<Keyword> keywords = jdbcQueries.getKeywords(1);
+
+                                if (!keywords.isEmpty()) {
+                                    searchByKeywords(searchType, keywords, headline, isOnlyLastNews, title, pubDate);
                                 } else {
                                     Common.showAlert("No keywords to search!");
                                     Gui.stopKeywordsSearch.doClick();
@@ -261,7 +343,7 @@ public class Search {
                     topTenWords.remove(word.getWord());
                 }
 
-                // Заполнение таблицы Top-10 в UI с проверкой схожести слов методом Джаро-Винклера
+                // Заполнение таблицы Top-10 в UI с проверкой схожести слов методом Джарро-Винклера
                 wordFreqMatches = searchType.equals("word") ? 5 : 3;
                 // отсев редких слов
                 topTenWords.entrySet().removeIf(x -> x.getValue() < wordFreqMatches);
@@ -282,6 +364,28 @@ public class Search {
                 } catch (SQLException ignored) {
                 }
                 isStop.set(true);
+            }
+        }
+    }
+
+    private void searchByKeywords(String searchType, List<Keyword> keywords, Headline headline, boolean isOnlyLastNews, String title, Date pubDate) {
+        for (Keyword keyword : keywords) {
+            if (headline.getTitle().toLowerCase().contains(keyword.getWord().toLowerCase())
+                    && headline.getTitle().length() > 15) {
+
+                // отсеиваем новости которые были обнаружены ранее
+                if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
+                    continue;
+                }
+
+                //Data for a table
+                int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
+
+                if (dateDiff != 0) {
+                    saveToArchive(headline, title, pubDate);
+                    searchProcess(headline, searchType, isOnlyLastNews);
+                    getTopTenData(headline.getTitle());
+                }
             }
         }
     }

@@ -1,20 +1,29 @@
 package com.avandy.news.utils;
 
 import com.avandy.news.database.JdbcQueries;
-import com.avandy.news.gui.*;
+import com.avandy.news.gui.Dialogs;
+import com.avandy.news.gui.FrameDragListener;
+import com.avandy.news.gui.Gui;
+import com.avandy.news.gui.Icons;
+import com.avandy.news.gui.TextLang;
 import com.avandy.news.model.Excluded;
 import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.Headline;
+import com.avandy.news.parser.ParserJsoup;
+import com.avandy.news.parser.ParserRome;
 import com.avandy.news.search.Search;
 import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
 import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.io.FeedException;
+import com.rometools.rome.feed.synd.SyndFeed;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,8 +31,16 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.avandy.news.gui.TextLang.*;
@@ -40,6 +57,8 @@ public class Common {
     public static JComboBox<String> assistantInterval;
     public final JComboBox<String> countriesCombobox = new JComboBox<>(
             new String[]{"all", "Russia", "USA", "France", "Germany", "UK", "Africa"});
+    public static final int READ_TIMEOUT = 3000;
+    public static final int CONNECT_TIMEOUT = 3000;
 
     // создание файлов и директорий
     public static void createFiles() {
@@ -311,8 +330,7 @@ public class Common {
         Gui.progressBar.setValue(counter);
         try {
             Thread.sleep(7);
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
         counter++;
         return counter;
@@ -365,8 +383,7 @@ public class Common {
                 out.write(buffer, 0, lengthRead);
                 out.flush();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -471,7 +488,7 @@ public class Common {
                 || newsDescribe.contains("&quot")
                 || newsDescribe.contains("<span")
                 || newsDescribe.contains("<ol")
-                || newsDescribe.equals("");
+                || newsDescribe.isEmpty();
     }
 
     public static String getNameFromUrl(String url) {
@@ -566,7 +583,7 @@ public class Common {
         JButton oneWord = new JButton(assistFind);
         oneWord.setForeground(fontColor);
         oneWord.addActionListener(e -> {
-            if (word.getText().length() > 0) {
+            if (!word.getText().isEmpty()) {
                 Gui.searchInterval.setSelectedItem(assistantInterval.getSelectedItem());
                 Gui.keyword.setText(word.getText());
                 Gui.searchByKeyword.doClick();
@@ -674,12 +691,12 @@ public class Common {
         }
 
         // сначала отображаются схожие слова
-        if (comparedTop10.size() > 0) {
+        if (!comparedTop10.isEmpty()) {
             // Удаление исключённых слов из мап слов имеющих общие корни
             for (Excluded word : Search.excludedWordsTopTen) {
                 comparedTop10.remove(word.getWord());
             }
-            if (comparedTop10.size() > 0)
+            if (!comparedTop10.isEmpty())
                 Gui.modelTopTen.addRow(new Object[]{"- - - - - - - " + topTenSimilarText});
         }
 
@@ -688,7 +705,7 @@ public class Common {
                 .forEach(x -> Gui.modelTopTen.addRow(new Object[]{x.getKey(), x.getValue()}));
 
         // потом отображаются уникальные слова
-        if (comparedTop10.size() > 0 && wordsCount.size() > 0) Gui.modelTopTen.addRow(
+        if (!comparedTop10.isEmpty() && !wordsCount.isEmpty()) Gui.modelTopTen.addRow(
                 new Object[]{"- - - - - - - " + topTenUniqueText});
         wordsCount.entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
@@ -738,7 +755,7 @@ public class Common {
         String String1 = textField1.getText();
         String String2 = textField2.getText();
 
-        if (String1.length() > 0 && String2.length() > 0) {
+        if (!String1.isEmpty() && !String2.isEmpty()) {
             if (result == 1) {
                 Common.showInfo("String similarity [" + String1 + " : " + String2 + "] is " +
                         jaroWinklerCompare(String1, String2) + "%");
@@ -749,28 +766,39 @@ public class Common {
 
     public boolean isDateValid(int month, int day) {
         try {
-            LocalDate.of(1987, month, day);
+            LocalDate localDate = LocalDate.of(1987, month, day);
         } catch (DateTimeException e) {
             Common.showAlert("Incorrect date format specified");
             return false;
         }
         return true;
     }
+    public static int jaroWinklerCompare(String text1, String text2) {
+        return (int) Math.round((1 - new JaroWinklerDistance().apply(text1, text2)) * 100);
+    }
 
-    public static boolean checkRss(String link) {
-        try {
-            for (SyndEntry message : new Parser().parseFeed(link).getEntries()) {
+
+    // Проверка источника при добавлении
+    public boolean checkRomeRss(String link) {
+        SyndFeed syndFeed = new ParserRome().parseFeed(link);
+
+        if (syndFeed != null) {
+            for (SyndEntry message : syndFeed.getEntries()) {
                 String title = message.getTitle();
-                return (title != null && title.length() > 0);
+                return (title != null && !title.isEmpty());
             }
-        } catch (FeedException | IOException ignored) {
-            return false;
         }
         return false;
     }
 
-    public static int jaroWinklerCompare(String text1, String text2) {
-        return (int) Math.round((1 - new JaroWinklerDistance().apply(text1, text2)) * 100);
+
+    // Проверка источника при добавлении
+    public boolean checkJsoupRss(String link) {
+        for (Headline item : new ParserJsoup().parse(link)) {
+            String title = item.getTitle();
+            return (title != null && !title.isEmpty());
+        }
+        return false;
     }
 
 }

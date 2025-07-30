@@ -89,14 +89,16 @@ public class JdbcQueries {
     }
 
     // Вставка нового источника
-    public void addNewSource(String source, String link, String country) {
+    public void addNewSource(String source, String link, String country, ParserType parserType) {
         try {
-            String query = "INSERT INTO rss_list(source, link, is_active, user_id, country) VALUES (?, ?, 1, ?, ?)";
+            String query = "INSERT INTO rss_list(source, link, is_active, user_id, country, parser_type) " +
+                    "VALUES (?, ?, 1, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, source);
             statement.setString(2, link);
             statement.setInt(3, Login.userId);
             statement.setString(4, country);
+            statement.setString(5, parserType.name());
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
@@ -254,38 +256,57 @@ public class JdbcQueries {
 
     /* SELECT */
     // Источники новостей
-    public List<Source> getSources(String type) {
+    public List<Source> getSourcesRome(String type) {
         List<Source> sources = new ArrayList<>();
         try {
             String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
-                    "WHERE is_active = 1 AND user_id = ? " +
+                    "WHERE is_active = 1 AND user_id = ? and parser_type = 'ROME' " +
                     "ORDER BY position";
 
-            if (type.equals("all")) {
-                query = "SELECT id, source, link, is_active, position, country FROM rss_list WHERE user_id = ? " +
-                        "ORDER BY is_active DESC, position";
-            }
-
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, Login.userId);
-
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                sources.add(Source.builder()
-                        .id(rs.getInt("id"))
-                        .source(rs.getString("source"))
-                        .link(rs.getString("link"))
-                        .isActive(rs.getBoolean("is_active"))
-                        .position(rs.getInt("position"))
-                        .country(rs.getString("country"))
-                        .build());
-            }
-            rs.close();
-            statement.close();
+            getAllRssById(type, sources, query);
         } catch (Exception e) {
             Common.showAlert("getSources error: " + e.getMessage());
         }
         return sources;
+    }
+
+    public List<Source> getSourcesJsoup(String type) {
+        List<Source> sources = new ArrayList<>();
+        try {
+            String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
+                    "WHERE is_active = 1 AND user_id = ? and parser_type = 'JSOUP' " +
+                    "ORDER BY position";
+
+            getAllRssById(type, sources, query);
+        } catch (Exception e) {
+            Common.showAlert("getSources error: " + e.getMessage());
+        }
+        return sources;
+    }
+
+    private void getAllRssById(String type, List<Source> sources, String query) throws SQLException {
+        if (type.equals("all")) {
+            query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
+                    "WHERE user_id = ? " +
+                    "ORDER BY is_active DESC, position";
+        }
+
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, Login.userId);
+
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            sources.add(Source.builder()
+                    .id(rs.getInt("id"))
+                    .source(rs.getString("source"))
+                    .link(rs.getString("link"))
+                    .isActive(rs.getBoolean("is_active"))
+                    .position(rs.getInt("position"))
+                    .country(rs.getString("country"))
+                    .build());
+        }
+        rs.close();
+        statement.close();
     }
 
     // Настройки по ключу
@@ -921,7 +942,6 @@ public class JdbcQueries {
             statement.executeUpdate();
             statement.close();
         } catch (SQLException sql) {
-            sql.printStackTrace();
             Common.showAlert("updateFeeling error: " + sql.getMessage());
         }
     }
@@ -949,7 +969,6 @@ public class JdbcQueries {
             statement.executeUpdate();
             statement.close();
         } catch (SQLException sql) {
-            sql.printStackTrace();
             Common.showAlert("updateRuleFeeling error: " + sql.getMessage());
         }
     }

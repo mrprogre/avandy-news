@@ -12,6 +12,16 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- https://mvnrepository.com/artifact/com.rometools/rome -->
+        <rometools.version>2.1.0</rometools.version>
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <jsoup.version>1.21.1</jsoup.version>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+        <commons.text>1.14.0</commons.text>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <org.json>20250517</org.json>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <fasterxml.jackson>2.19.1</fasterxml.jackson>
     </properties>
 
     <dependencies>
@@ -38,7 +48,13 @@
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>2.1.0</version>
+            <version>${rometools.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
         </dependency>
 
         <dependency>
@@ -63,7 +79,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.13.1</version>
+            <version>${commons.text}</version>
         </dependency>
 
     </dependencies>

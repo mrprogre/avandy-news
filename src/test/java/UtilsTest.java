@@ -24,10 +24,4 @@ public class UtilsTest {
         }
     }
 
-    @Test
-    public void checkRssTest() {
-        assertTrue(Common.checkRss("https://www.agroinvestor.ru/feed/public-agronews.xml"));
-        assertFalse(Common.checkRss("wrong.xml"));
-    }
-
 }

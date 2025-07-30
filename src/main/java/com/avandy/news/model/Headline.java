@@ -1,6 +1,7 @@
 package com.avandy.news.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class Headline implements Comparable<Headline> {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.ENGLISH);
     private String title;

@@ -51,7 +51,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 this.setTitle("Sources");
                 this.setLocationRelativeTo(Gui.mainTableScrollPane);
 
-                for (int i = 1; i <= 100 ; i++) {
+                for (int i = 1; i <= 100; i++) {
                     positionCombobox.addItem(i);
                 }
 
@@ -148,18 +148,24 @@ public class Dialogs extends JDialog implements KeyListener {
 
                     String linkValue = link.getText();
 
-                    if (rss.getText().length() > 0 && linkValue.length() > 0) {
+                    if (!rss.getText().isEmpty() && !linkValue.isEmpty()) {
                         if (result == JOptionPane.OK_OPTION) {
                             Common.showInfo(TextLang.checkAddedRss);
 
-                            if (!Common.checkRss(linkValue)) {
+                            // Проверка источников двумя парсерами
+                            ParserType parserType;
+                            if (Common.checkRomeRss(linkValue)) {
+                                parserType = ParserType.ROME;
+                            } else if (Common.checkJsoupRss(linkValue)) {
+                                parserType = ParserType.JSOUP;
+                            } else {
                                 Common.showAlertHtml(TextLang.checkAddedRssFailed + linkValue);
                                 return;
                             }
 
                             saveDialogPosition(nameXY);
                             jdbcQueries.addNewSource(rss.getText(), linkValue,
-                                    (String) Common.countriesCombobox.getSelectedItem());
+                                    (String) Common.countriesCombobox.getSelectedItem(), parserType);
                             this.setVisible(false);
                             new Dialogs("dialog_sources");
                             setDialogPosition(nameXY);
@@ -265,7 +271,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 JButton addButton = new JButton("add word");
                 addButton.setForeground(FONT_COLOR);
                 addButton.addActionListener(e -> {
-                    if (word.getText().length() > 0) {
+                    if (!word.getText().isEmpty()) {
                         saveDialogPosition(nameXY);
                         jdbcQueries.addWordToExcludeTitles(word.getText());
                         this.setVisible(false);
@@ -332,7 +338,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 JButton addButton = new JButton("add word");
                 addButton.setForeground(FONT_COLOR);
                 addButton.addActionListener(e -> {
-                    if (word.getText().length() > 0) {
+                    if (!word.getText().isEmpty()) {
                         saveDialogPosition(nameXY);
                         jdbcQueries.addKeyword(word.getText());
                         this.setVisible(false);
@@ -492,14 +498,14 @@ public class Dialogs extends JDialog implements KeyListener {
                 panel.add(addButton);
 
                 addButton.addActionListener(e -> {
-                    if (description.getText().length() > 0) {
+                    if (!description.getText().isEmpty()) {
                         String type = String.valueOf(typesComboBox.getSelectedItem());
                         String descr = description.getText();
                         int dayToDatabase = (int) daysComboBox.getSelectedItem();
                         int monthToDatabase = monthsComboBox.getSelectedIndex() + 1;
 
                         int yearToDatabase = -1;
-                        if (year.getText().length() != 0) {
+                        if (!year.getText().isEmpty()) {
                             yearToDatabase = Integer.parseInt(year.getText());
                         }
 
@@ -670,7 +676,7 @@ public class Dialogs extends JDialog implements KeyListener {
                 panel.add(addButton);
 
                 addButton.addActionListener(e -> {
-                    if (like.getText().length() > 0) {
+                    if (!like.getText().isEmpty()) {
                         String likeText = like.getText();
                         String feel = String.valueOf(addRuleFeelingCombobox.getSelectedItem());
                         Integer weightValue = Integer.parseInt(String.valueOf(addRuleWtCombobox.getSelectedItem()));
@@ -870,7 +876,7 @@ public class Dialogs extends JDialog implements KeyListener {
         int id = 0;
         switch (name) {
             case "smi": {
-                List<Source> sources = jdbcQueries.getSources("all");
+                List<Source> sources = jdbcQueries.getSourcesRome("all");
                 for (Source s : sources) {
                     Dialogs.model.addRow(new Object[]{++id, s.getCountry(), s.getSource(), s.getLink(),
                             s.getPosition(), s.getIsActive()});
@@ -944,10 +950,12 @@ public class Dialogs extends JDialog implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     // Закрываем диалоговые окна клавишей ESC
     @Override

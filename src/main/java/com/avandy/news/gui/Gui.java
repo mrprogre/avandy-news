@@ -78,6 +78,10 @@ public class Gui extends JFrame {
     private static int sourceColumnNum;
     private static int feelColumnNum;
     private static int weightColumnNum;
+    private Timer animationTimer;
+    private int animationCounter = 0;
+    private static final int ANIMATION_CYCLES = 20;
+    private static final int ANIMATION_DELAY_MS = 500;
 
     public Gui(HashMap<String, Integer> guiSettings, HashMap<String, Color> guiColors) {
         String tableFontName = jdbcQueries.getSetting("font_name");
@@ -110,7 +114,7 @@ public class Gui extends JFrame {
         boolean isUniformTranslucencySupported = gd.isWindowTranslucencySupported(TRANSLUCENT);
         if (isUniformTranslucencySupported) {
             String transparencyValue = new JdbcQueries().getSetting("transparency");
-            if (transparencyValue != null && transparencyValue.length() > 0) {
+            if (transparencyValue != null && !transparencyValue.isEmpty()) {
                 int val = Integer.parseInt(transparencyValue);
                 if (val > 100) transparencyValue = "100";
                 else if (val < 0) transparencyValue = "40";
@@ -326,7 +330,7 @@ public class Gui extends JFrame {
                         try {
                             String titleToArch = JOptionPane.showInputDialog(mainTableScrollPane, "title");
                             // Check title
-                            while (titleToArch.length() == 0) {
+                            while (titleToArch.isEmpty()) {
                                 titleToArch = JOptionPane.showInputDialog(mainTableScrollPane, "input title");
                             }
 
@@ -370,7 +374,6 @@ public class Gui extends JFrame {
                             amountOfNewsLabel.setText(String.valueOf(newsCount));
                         } catch (Exception t) {
                             Common.showAlert(t.getMessage());
-                            t.printStackTrace();
                         }
                     });
 
@@ -1106,8 +1109,7 @@ public class Gui extends JFrame {
                     }
                 }
             });
-        } catch (IOException | AWTException e) {
-            e.printStackTrace();
+        } catch (IOException | AWTException ignored) {
         }
     }
 
@@ -1115,8 +1117,7 @@ public class Gui extends JFrame {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             try {
                 Desktop.getDesktop().open(new File(Common.DIRECTORY_PATH + "sqlite3.exe"));
-            } catch (IOException io) {
-                io.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
 
@@ -1163,8 +1164,7 @@ public class Gui extends JFrame {
                     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
                         try {
                             Desktop.getDesktop().open(new File(Common.DATABASE_PATH.replace("news.db", "")));
-                        } catch (IOException exception) {
-                            exception.printStackTrace();
+                        } catch (IOException ignored) {
                         }
                     }
                 }
@@ -1189,6 +1189,7 @@ public class Gui extends JFrame {
         } else if (sizeGui.equals(GuiSize.LARGE.getSize())) {
             rowSizes = new Integer[]{29, 36, 48};
         }
+        assert rowSizes != null;
         JComboBox<Integer> rowHeightCombobox = new JComboBox<>(rowSizes);
         rowHeightCombobox.setSelectedItem(rowHeightValue);
 
@@ -1384,15 +1385,13 @@ public class Gui extends JFrame {
             URI uri = null;
             try {
                 uri = new URI("https://" + url);
-            } catch (URISyntaxException ex) {
-                ex.printStackTrace();
+            } catch (URISyntaxException ignored) {
             }
             Desktop desktop = Desktop.getDesktop();
             assert uri != null;
             try {
                 desktop.browse(uri);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } catch (IOException ignored) {
             }
         }
     }
@@ -1721,12 +1720,12 @@ public class Gui extends JFrame {
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, Icons.EDIT_ICON, menu, menu[1]);
 
             if (option == 1) {
-                if (link1text.getText().length() != 0 &&
-                        link2text.getText().length() != 0 &&
-                        link3text.getText().length() != 0 &&
-                        link4text.getText().length() != 0 &&
-                        link5text.getText().length() != 0 &&
-                        link6text.getText().length() != 0) {
+                if (!link1text.getText().isEmpty() &&
+                        !link2text.getText().isEmpty() &&
+                        !link3text.getText().isEmpty() &&
+                        !link4text.getText().isEmpty() &&
+                        !link5text.getText().isEmpty() &&
+                        !link6text.getText().isEmpty()) {
                     jdbcQueries.updateSettings("link1", link1text.getText());
                     jdbcQueries.updateSettings("link2", link2text.getText());
                     jdbcQueries.updateSettings("link3", link3text.getText());
@@ -1845,8 +1844,11 @@ public class Gui extends JFrame {
                             int option = JOptionPane.showOptionDialog(mainTableScrollPane,
                                     text, "New version of App", JOptionPane.YES_NO_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE, Icons.CHECK_FOR_UPDATES_ICON, menu, menu[1]);
-                            if (option == 1 && url.length() > 0) {
-                                openPage(url);
+                            if (option == 1) {
+                                assert url != null;
+                                if (!url.isEmpty()) {
+                                    openPage(url);
+                                }
                             }
                         }
                     }
@@ -1879,19 +1881,28 @@ public class Gui extends JFrame {
     }
 
     private void createUserAnimation() {
-        loginLabel.setForeground(Color.RED);
-        loginLabel.setText("create user");
-        try {
-            for (int i = 0; i < 10; i++) {
-                Thread.sleep(500);
-                loginLabel.setEnabled(true);
-                Thread.sleep(500);
-                loginLabel.setEnabled(false);
-            }
-        } catch (InterruptedException e) {
-            Common.showAlert(e.getMessage());
+        // Останавливаем предыдущую анимацию, если она была
+        if (animationTimer != null && animationTimer.isRunning()) {
+            animationTimer.stop();
         }
-        loginLabel.setForeground(guiFontColor);
+
+        loginLabel.setForeground(Color.RED);
+        loginLabel.setText("PRESS TO CREATE USER");
+        animationCounter = 0;
+
+        // Создаем таймер для анимации
+        animationTimer = new Timer(ANIMATION_DELAY_MS, e -> {
+            loginLabel.setEnabled(animationCounter % 2 == 0);
+            animationCounter++;
+
+            if (animationCounter >= ANIMATION_CYCLES * 2) {
+                animationTimer.stop();
+                loginLabel.setForeground(guiFontColor);
+                loginLabel.setEnabled(true);
+            }
+        });
+
+        animationTimer.start();
     }
 
 }
