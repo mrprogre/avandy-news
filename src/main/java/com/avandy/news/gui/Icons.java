@@ -9,7 +9,7 @@ import java.net.URL;
 @UtilityClass
 public class Icons {
     public static final ImageIcon qrSbp = new ImageIcon(Toolkit.getDefaultToolkit()
-            .createImage(Icons.class.getResource("/qr.png")));
+            .createImage(Icons.class.getResource("/sber_qr_for_me.png")));
     public static final URL APP_IN_TRAY_BUTTON_ICON = Icons.class.getResource("/icons/in_tray.png");
     public static final ImageIcon MINUS_RED_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/minus.png")));
