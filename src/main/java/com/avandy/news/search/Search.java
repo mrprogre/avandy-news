@@ -292,9 +292,12 @@ public class Search {
                     Gui.amountOfNewsLabel.setText(amountOfNewsLabelText + newsCount);
                 }
 
-                // Сортировка DESC и заполнение таблицы анализа
+                // Удаление дубликатов и сортировка новостей
                 headlinesList = headlinesList.stream()
-                        .distinct()
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Headline::getTitle))),
+                                ArrayList::new))
+                        .stream()
                         .sorted(Collections.reverseOrder())
                         .collect(Collectors.toList());
 
