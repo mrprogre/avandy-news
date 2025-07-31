@@ -256,26 +256,11 @@ public class JdbcQueries {
 
     /* SELECT */
     // Источники новостей
-    public List<Source> getSourcesRome(String type) {
+    public List<Source> getSources(String type) {
         List<Source> sources = new ArrayList<>();
         try {
             String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
-                    "WHERE is_active = 1 AND user_id = ? and parser_type = 'ROME' " +
-                    "ORDER BY position";
-
-            getAllRssById(type, sources, query);
-        } catch (Exception e) {
-            Common.showAlert("getSources error: " + e.getMessage());
-        }
-        return sources;
-    }
-
-    public List<Source> getSourcesJsoup(String type) {
-        List<Source> sources = new ArrayList<>();
-        try {
-            String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
-                    "WHERE is_active = 1 AND user_id = ? and parser_type = 'JSOUP' " +
-                    "ORDER BY position";
+                    "WHERE is_active = 1 AND user_id = ? ORDER BY position";
 
             getAllRssById(type, sources, query);
         } catch (Exception e) {
@@ -286,8 +271,7 @@ public class JdbcQueries {
 
     private void getAllRssById(String type, List<Source> sources, String query) throws SQLException {
         if (type.equals("all")) {
-            query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
-                    "WHERE user_id = ? " +
+            query = "SELECT id, source, link, is_active, position, country FROM rss_list WHERE user_id = ? " +
                     "ORDER BY is_active DESC, position";
         }
 

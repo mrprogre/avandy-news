@@ -74,8 +74,7 @@ public class Search {
             try {
                 Headline headline;
                 List<Excluded> excludedTitles = jdbcQueries.getExcludedWords("headline");
-                List<Source> sourcesListRome = jdbcQueries.getSourcesRome("active");
-                List<Source> sourcesListJsoup = jdbcQueries.getSourcesJsoup("active");
+                List<Source> sourcesList = jdbcQueries.getSources("active");
                 sqLite.transaction("BEGIN TRANSACTION");
 
                 // search animation
@@ -83,109 +82,13 @@ public class Search {
 
                 int q = 1;
                 int processPercent;
-                // ROME
-                for (Source source : sourcesListRome) {
+
+                // Поиск по ROME и JSOUP
+                for (Source source : sourcesList) {
                     if (isStop.get()) return;
 
-                    processPercent = (int) Math.round((double) q++ / (sourcesListRome.size() + 1) * 100);
-                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.5) + "%] " +
-                            source.getSource());
-
-                    try {
-                        for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
-                            String title = message.getTitle();
-                            Date pubDate = message.getPublishedDate();
-                            String newsDescribe = message.getDescription().getValue()
-                                    .trim()
-                                    .replaceAll(("<p>|</p>|<br />|&#"), "");
-                            if (Common.isHref(newsDescribe)) newsDescribe = title;
-
-                            headline = new Headline(
-                                    title,
-                                    source.getSource(),
-                                    newsDescribe,
-                                    message.getLink(),
-                                    Headline.DATE_FORMAT.format(pubDate)
-                            );
-
-                            if (isWord || isTopTen) {
-                                Gui.findWord = Gui.keyword.getText().toLowerCase();
-                                String newsTitle = headline.getTitle().toLowerCase();
-
-                                // вставка всех без исключения новостей в архив
-                                saveToArchive(headline, title, pubDate);
-
-                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > 15) {
-                                    int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
-
-                                    if (dateDiff != 0) {
-                                        // Данные за период для таблицы топ-10 без отсева заголовков
-                                        getTopTenData(headline.getTitle());
-                                    }
-
-                                    if (isTopTen) {
-                                        if (dateDiff != 0) {
-                                            searchProcess(headline, searchType, isOnlyLastNews);
-                                        }
-                                    } else {
-                                        //отсеиваем новости, которые уже были найдены ранее при включенном чекбоксе
-                                        if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
-                                            continue;
-                                        }
-
-                                        if (Gui.findWord.isEmpty()) {
-                                            // замена не интересующих заголовков в UI на # + слово исключение
-                                            for (Excluded excludedTitle : excludedTitles) {
-                                                if (excludedTitle.getWord().length() > 2 && newsTitle.contains(excludedTitle.getWord())) {
-                                                    headline.setTitle("# " + excludedTitle);
-                                                }
-                                            }
-
-                                            if (dateDiff != 0 && !headline.getTitle().contains("#")) {
-                                                searchProcess(headline, searchType, isOnlyLastNews);
-                                            }
-
-                                            if (dateDiff != 0 && headline.getTitle().contains("#")) {
-                                                ++excludedCount;
-                                            }
-                                        } else {
-                                            if (dateDiff != 0) {
-                                                searchProcess(headline, searchType, isOnlyLastNews);
-                                            }
-                                        }
-                                    }
-                                }
-                            } else if (isWords) {
-                                List<Keyword> keywords = jdbcQueries.getKeywords(1);
-
-                                if (!keywords.isEmpty()) {
-                                    searchByKeywords(searchType, keywords, headline, isOnlyLastNews, title, pubDate);
-                                } else {
-                                    Common.showAlert("No keywords to search!");
-                                    Gui.stopKeywordsSearch.doClick();
-                                    Gui.modelMain.setRowCount(0);
-                                    return;
-                                }
-                            }
-                            if (isStop.get()) return;
-                        }
-                        if (!Gui.isOnlyLastNews) {
-                            jdbcQueries.removeFromTitles();
-                        }
-                    } catch (Exception e) {
-                        String smi = source.getLink()
-                                .replaceAll(("https://|http://|www."), "");
-                        smi = smi.substring(0, smi.indexOf("/"));
-                        Common.console(smi + " is not available");
-                    }
-                }
-
-                // JSOUP
-                for (Source source : sourcesListJsoup) {
-                    if (isStop.get()) return;
-
-                    processPercent = (int) Math.round((double) q++ / (sourcesListJsoup.size() + 1) * 100);
-                    Gui.searchAnimationLabel.setText("Progress: [" + (int) (processPercent / 1.5) + "%] " +
+                    processPercent = (int) Math.round((double) q++ / (sourcesList.size() + 1) * 100);
+                    Gui.searchAnimationLabel.setText("Progress: [" + processPercent + "%] " +
                             source.getSource());
 
                     try {

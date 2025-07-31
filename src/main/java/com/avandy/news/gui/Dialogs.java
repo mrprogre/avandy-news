@@ -876,7 +876,7 @@ public class Dialogs extends JDialog implements KeyListener {
         int id = 0;
         switch (name) {
             case "smi": {
-                List<Source> sources = jdbcQueries.getSourcesRome("all");
+                List<Source> sources = jdbcQueries.getSources("all");
                 for (Source s : sources) {
                     Dialogs.model.addRow(new Object[]{++id, s.getCountry(), s.getSource(), s.getLink(),
                             s.getPosition(), s.getIsActive()});

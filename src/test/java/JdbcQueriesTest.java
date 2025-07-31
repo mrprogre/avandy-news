@@ -25,9 +25,9 @@ public class JdbcQueriesTest {
 
     @Test
     public void checkSources() {
-        assertEquals(7, jdbcQueries.getSourcesRome("all").size(),
+        assertEquals(7, jdbcQueries.getSources("all").size(),
                 "Неправильное общее количество источников");
-        assertEquals(6, jdbcQueries.getSourcesRome("active").size(),
+        assertEquals(6, jdbcQueries.getSources("active").size(),
                 "Неправильное количество активных источников");
     }
 
