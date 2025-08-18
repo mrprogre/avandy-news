@@ -1070,7 +1070,9 @@ public class JdbcQueries {
                 "       add_feel_user_id = ?," +
                 "       add_feel_date = datetime('now', 'localtime')" +
                 " where news_date BETWEEN datetime('now', '-7 days', 'localtime') AND datetime('now', 'localtime') " +
-                "   and title_lower like '%' || ? || '%'";
+                "   and title_lower like '%' || ? || '%'" +
+                "   and feel is null" +
+                "   and weight is null";
         try {
             PreparedStatement statement = connection.prepareStatement(query);
 

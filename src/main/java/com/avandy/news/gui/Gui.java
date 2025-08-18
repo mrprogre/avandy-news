@@ -54,8 +54,8 @@ public class Gui extends JFrame {
     public static final Color guiFontColor = new Color(255, 255, 153);
     public static final String[] INTERVALS = {"1 min", "5 min", "15 min", "30 min", "45 min", "1 hour", "2 hours",
             "4 hours", "8 hours", "12 hours", "24 hours", "48 hours", "72 hours", "all"};
-    public static final String [] interfaceLanguages = new String[]{"en", "ru"};
-    public static final String [] onOff = new String[]{"on", "off"};
+    public static final String[] interfaceLanguages = new String[]{"en", "ru"};
+    public static final String[] onOff = new String[]{"on", "off"};
     public static final JComboBox<Integer> WEIGHT_COMBOBOX =
             new JComboBox<>(new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     public static final AtomicBoolean WAS_CLICK_IN_TABLE_FOR_ANALYSIS = new AtomicBoolean(false);
@@ -203,56 +203,63 @@ public class Gui extends JFrame {
         mainTable.getColumnModel().getColumn(getColumnIndex("Date")).setMaxWidth(143);
         mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Description"))); // Скрыть описание
         mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Link"))); // Скрыть ссылку
+        // Если выключена опция показывать в таблице ощущения и их вес
+        if (!Common.isFeelAndWeight()) {
+            mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Feel")));
+            mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Wt")));
+        }
 
-        // отношение к новости: позитив/негатив или - не важно
-        JComboBox<String> feeling = new JComboBox<>(new String[]{"", "+", "-"});
-        feeling.addActionListener(e -> {
-            titleColumnNum = getColumnIndex("Title");
-            feelColumnNum = getColumnIndex("Feel");
+        if (Common.isFeelAndWeight()) {
+            // отношение к новости: позитив/негатив или - не важно
+            JComboBox<String> feeling = new JComboBox<>(new String[]{"", "+", "-"});
+            feeling.addActionListener(e -> {
+                titleColumnNum = getColumnIndex("Title");
+                feelColumnNum = getColumnIndex("Feel");
 
-            try {
-                int row = mainTable.getSelectedRow();
-                int col = mainTable.getSelectedColumn();
-                if (col == feelColumnNum && row != -1) {
-                    if (mainTable.getValueAt(row, col) != null) {
-                        String title = mainTable.getValueAt(row, titleColumnNum).toString();
-                        String feel = mainTable.getValueAt(row, feelColumnNum).toString();
-                        jdbcQueries.updateFeeling(title, feel);
+                try {
+                    int row = mainTable.getSelectedRow();
+                    int col = mainTable.getSelectedColumn();
+                    if (col == feelColumnNum && row != -1) {
+                        if (mainTable.getValueAt(row, col) != null) {
+                            String title = mainTable.getValueAt(row, titleColumnNum).toString();
+                            String feel = mainTable.getValueAt(row, feelColumnNum).toString();
+                            jdbcQueries.updateFeeling(title, feel);
+                        }
                     }
+                } catch (Exception exception) {
+                    Common.showAlert(exception.getMessage());
                 }
-            } catch (Exception exception) {
-                Common.showAlert(exception.getMessage());
-            }
-        });
-        int columnFeelIndex = getColumnIndex("Feel");
-        mainTable.getColumnModel().getColumn(columnFeelIndex).setCellEditor(new DefaultCellEditor(feeling));
-        mainTable.getColumnModel().getColumn(columnFeelIndex).setCellRenderer(renderer);
-        mainTable.getColumnModel().getColumn(columnFeelIndex).setPreferredWidth(40);
-        mainTable.getColumnModel().getColumn(columnFeelIndex).setMaxWidth(40);
+            });
+            int columnFeelIndex = getColumnIndex("Feel");
+            mainTable.getColumnModel().getColumn(columnFeelIndex).setCellEditor(new DefaultCellEditor(feeling));
+            mainTable.getColumnModel().getColumn(columnFeelIndex).setCellRenderer(renderer);
+            mainTable.getColumnModel().getColumn(columnFeelIndex).setPreferredWidth(40);
+            mainTable.getColumnModel().getColumn(columnFeelIndex).setMaxWidth(40);
 
-        // Вес новости по значимости от 0 до 10
-        WEIGHT_COMBOBOX.addActionListener(e -> {
-            titleColumnNum = getColumnIndex("Title");
-            weightColumnNum = getColumnIndex("Wt");
-            try {
-                int row = mainTable.getSelectedRow();
-                int col = mainTable.getSelectedColumn();
-                if (col == weightColumnNum && row != -1) {
-                    if (mainTable.getValueAt(row, col) != null) {
-                        String title = mainTable.getValueAt(row, titleColumnNum).toString();
-                        int weight = Integer.parseInt(mainTable.getValueAt(row, weightColumnNum).toString());
-                        jdbcQueries.updateWeight(title, weight);
+            // Вес новости по значимости от 0 до 10
+            WEIGHT_COMBOBOX.addActionListener(e -> {
+                titleColumnNum = getColumnIndex("Title");
+                weightColumnNum = getColumnIndex("Wt");
+                try {
+                    int row = mainTable.getSelectedRow();
+                    int col = mainTable.getSelectedColumn();
+                    if (col == weightColumnNum && row != -1) {
+                        if (mainTable.getValueAt(row, col) != null) {
+                            String title = mainTable.getValueAt(row, titleColumnNum).toString();
+                            int weight = Integer.parseInt(mainTable.getValueAt(row, weightColumnNum).toString());
+                            jdbcQueries.updateWeight(title, weight);
+                        }
                     }
+                } catch (Exception exc) {
+                    Common.showAlert(exc.getMessage());
                 }
-            } catch (Exception exc) {
-                Common.showAlert(exc.getMessage());
-            }
-        });
-        int columnWeightIndex = getColumnIndex("Wt");
-        mainTable.getColumnModel().getColumn(columnWeightIndex).setCellEditor(new DefaultCellEditor(WEIGHT_COMBOBOX));
-        mainTable.getColumnModel().getColumn(columnWeightIndex).setCellRenderer(renderer);
-        mainTable.getColumnModel().getColumn(columnWeightIndex).setPreferredWidth(40);
-        mainTable.getColumnModel().getColumn(columnWeightIndex).setMaxWidth(40);
+            });
+            int columnWeightIndex = getColumnIndex("Wt");
+            mainTable.getColumnModel().getColumn(columnWeightIndex).setCellEditor(new DefaultCellEditor(WEIGHT_COMBOBOX));
+            mainTable.getColumnModel().getColumn(columnWeightIndex).setCellRenderer(renderer);
+            mainTable.getColumnModel().getColumn(columnWeightIndex).setPreferredWidth(40);
+            mainTable.getColumnModel().getColumn(columnWeightIndex).setMaxWidth(40);
+        }
 
         // Mouse LEFT click listener
         mainTable.addMouseListener(new MouseAdapter() {
@@ -1011,7 +1018,7 @@ public class Gui extends JFrame {
         animation(loginLabel);
 
         JLabel botLabel = new JLabel("t.me/bot");
-        botLabel.setForeground(new Color(66, 202,232));
+        botLabel.setForeground(new Color(66, 202, 232));
         botLabel.setEnabled(false);
         animation(botLabel);
         botLabel.addMouseListener(new MouseAdapter() {
@@ -1133,6 +1140,7 @@ public class Gui extends JFrame {
         Integer rowHeightValue = Integer.valueOf(jdbcQueries.getSetting("row_height"));
         String isAssistValue = jdbcQueries.getSetting("is_assist");
         String isAutoFeel = jdbcQueries.getSetting("is_auto_feel");
+        String isFeelAndWeight = jdbcQueries.getSetting("is_feel_and_weight");
         String langValue = jdbcQueries.getSetting("lang");
         int jaroWinklerValue = Integer.parseInt(jdbcQueries.getSetting("jaro-winkler-level"));
 
@@ -1209,6 +1217,9 @@ public class Gui extends JFrame {
         JComboBox<String> onOffAutoFeel = new JComboBox<>(onOff);
         onOffAutoFeel.setSelectedItem(isAutoFeel);
 
+        JComboBox<String> onOffIsFeelAndWeight = new JComboBox<>(onOff);
+        onOffIsFeelAndWeight.setSelectedItem(isFeelAndWeight);
+
         JComboBox<String> langCombobox = new JComboBox<>(interfaceLanguages);
         langCombobox.setSelectedItem(langValue);
 
@@ -1257,7 +1268,7 @@ public class Gui extends JFrame {
         jwButton.addActionListener(ef -> Common.compareTwoStrings());
 
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(16, 1, 0, 5));
+        settingsPanel.setLayout(new GridLayout(17, 1, 0, 5));
         settingsPanel.add(new JLabel(languageText));
         settingsPanel.add(langCombobox);
         settingsPanel.add(new JLabel(interfaceXText));
@@ -1266,8 +1277,12 @@ public class Gui extends JFrame {
         settingsPanel.add(yTextField);
         settingsPanel.add(new JLabel(assistantText));
         settingsPanel.add(onOffAssistant);
-        settingsPanel.add(new JLabel(autoFeelText));
-        settingsPanel.add(onOffAutoFeel);
+        settingsPanel.add(new JLabel(isFeelAndWeightText));
+        settingsPanel.add(onOffIsFeelAndWeight);
+        if (Common.isFeelAndWeight()) {
+            settingsPanel.add(new JLabel(autoFeelText));
+            settingsPanel.add(onOffAutoFeel);
+        }
         settingsPanel.add(new JLabel(tableFontNameText));
         settingsPanel.add(fontNameCombobox);
         settingsPanel.add(new JLabel(fontSizeText));
@@ -1310,6 +1325,7 @@ public class Gui extends JFrame {
             jdbcQueries.updateSettings("row_height", Objects.requireNonNull(rowHeightCombobox.getSelectedItem()).toString());
             jdbcQueries.updateSettings("is_assist", Objects.requireNonNull(onOffAssistant.getSelectedItem()).toString());
             jdbcQueries.updateSettings("is_auto_feel", Objects.requireNonNull(onOffAutoFeel.getSelectedItem()).toString());
+            jdbcQueries.updateSettings("is_feel_and_weight", Objects.requireNonNull(onOffIsFeelAndWeight.getSelectedItem()).toString());
             jdbcQueries.updateSettings("jaro-winkler-level", Objects.requireNonNull(jaroWinklerCombobox.getSelectedItem()).toString());
             jdbcQueries.updateSettings("lang", Objects.requireNonNull(langCombobox.getSelectedItem()).toString());
             jdbcQueries.updateSettings("gui_x", xTextField.getText());

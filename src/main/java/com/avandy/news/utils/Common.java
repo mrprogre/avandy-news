@@ -113,6 +113,10 @@ public class Common {
         return new JdbcQueries().getSetting("is_auto_feel").equals("on");
     }
 
+    public static boolean isFeelAndWeight() {
+        return new JdbcQueries().getSetting("is_feel_and_weight").equals("on");
+    }
+
     // подсчёт ощущений от прочтения новостей за период с выводом значения в консоль
     public void calcBalanceFeelingsByPeriod() {
         int balanceRSS;

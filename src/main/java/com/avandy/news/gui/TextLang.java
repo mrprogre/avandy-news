@@ -18,7 +18,7 @@ public class TextLang {
             rightClickMenuExcludedText, rightClickMenuExcludedTooltipText, settingsDialogText,
             assistWelcome, assistQuestion, assistFind, assistAllNews, assistKeywords, assistOneWord,
             assistPeriod, assistStartUp, reminderToday, reminderTomorrow, reminderWillBe, reminderIs,
-            checkAddedRss, checkAddedRssFailed;
+            checkAddedRss, checkAddedRssFailed, isFeelAndWeightText;
 
     public void setUiText() {
         String uiLang = Common.getUiLang();
@@ -49,6 +49,7 @@ public class TextLang {
             interfaceYText = "Interface Y";
             assistantText = "Assistant";
             autoFeelText = "Auto feel";
+            isFeelAndWeightText = "Feel and weight";
             tableFontNameText = "Table font name";
             fontSizeText = "Font size";
             rowHeightText = "Row height";
@@ -120,6 +121,7 @@ public class TextLang {
             interfaceYText = "Позиция Y";
             assistantText = "Ассистент";
             autoFeelText = "Автоустановка ощущений";
+            isFeelAndWeightText = "Ощущения и их вес";
             tableFontNameText = "Название шрифта";
             fontSizeText = "Размер шрифта";
             rowHeightText = "Высота строки";
