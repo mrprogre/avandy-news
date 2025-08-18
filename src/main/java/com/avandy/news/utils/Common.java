@@ -154,14 +154,16 @@ public class Common {
 
         String searchSource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
 
-        if (searchSource.equals("arc") || searchSource.equals("архиве")) {
-            console("balance of feelings: " + balanceArchive +
-                    " (+" + positiveCountArchive + " -" + negativeCountArchive + ")");
-        } else {
-            console("balance of feelings:\n" +
-                    "actual: " + balanceRSS + " (+" + positiveCount + " -" + negativeCount + ")\n" +
-                    "archive: " + balanceArchive + " (+" + positiveCountArchive + " -" + negativeCountArchive + ")"
-            );
+        if (Common.isFeelAndWeight()) {
+            if (searchSource.equals("arc") || searchSource.equals("архиве")) {
+                console("balance of feelings: " + balanceArchive +
+                        " (+" + positiveCountArchive + " -" + negativeCountArchive + ")");
+            } else {
+                console("balance of feelings:\n" +
+                        "actual: " + balanceRSS + " (+" + positiveCount + " -" + negativeCount + ")\n" +
+                        "archive: " + balanceArchive + " (+" + positiveCountArchive + " -" + negativeCountArchive + ")"
+                );
+            }
         }
     }
 
