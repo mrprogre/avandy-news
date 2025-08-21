@@ -114,7 +114,9 @@ public class Common {
     }
 
     public static boolean isFeelAndWeight() {
-        return new JdbcQueries().getSetting("is_feel_and_weight").equals("on");
+        String isFeelAndWeight = new JdbcQueries().getSetting("is_feel_and_weight");
+        if (isFeelAndWeight == null) return false;
+        return isFeelAndWeight.equals("on");
     }
 
     // подсчёт ощущений от прочтения новостей за период с выводом значения в консоль
