@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.avandy.news.gui.TextLang.*;
+import static com.avandy.news.utils.Common.MIN_TITLE_LENGTH;
 
 public class Search {
     private static final SimpleDateFormat SQL_DATE_FORMAT =
@@ -115,7 +116,7 @@ public class Search {
                                 // вставка всех без исключения новостей в архив
                                 saveToArchive(headline, title, pubDate);
 
-                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > 15) {
+                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > MIN_TITLE_LENGTH) {
                                     int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
 
                                     if (dateDiff != 0) {
@@ -279,7 +280,7 @@ public class Search {
     private void searchByKeywords(String searchType, List<Keyword> keywords, Headline headline, boolean isOnlyLastNews, String title, Date pubDate) {
         for (Keyword keyword : keywords) {
             if (headline.getTitle().toLowerCase().contains(keyword.getWord().toLowerCase())
-                    && headline.getTitle().length() > 15) {
+                    && headline.getTitle().length() > MIN_TITLE_LENGTH) {
 
                 // отсеиваем новости которые были обнаружены ранее
                 if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {

@@ -1,7 +1,13 @@
 package com.avandy.news.database;
 
 import com.avandy.news.gui.Gui;
-import com.avandy.news.model.*;
+import com.avandy.news.model.Dates;
+import com.avandy.news.model.Excluded;
+import com.avandy.news.model.Favorite;
+import com.avandy.news.model.Feelings;
+import com.avandy.news.model.Keyword;
+import com.avandy.news.model.ParserType;
+import com.avandy.news.model.Source;
 import com.avandy.news.utils.Common;
 import com.avandy.news.utils.Login;
 
@@ -21,8 +27,8 @@ public class JdbcQueries {
     // сохранение всех заголовков в архив
     public void addAllTitlesToArchive(String title, String date, String link, String source, String describe) {
         try {
-            String query = "INSERT INTO all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
+            String query = "insert into all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
+                    "values (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, title);
             statement.setString(2, date);
@@ -45,8 +51,8 @@ public class JdbcQueries {
         boolean isAdded = false;
 
         try {
-            String query = "INSERT INTO all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
+            String query = "insert into all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
+                    "values (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, title);
             statement.setString(2, date);
@@ -70,7 +76,7 @@ public class JdbcQueries {
     public void addKeyword(String word) {
         if (word.length() > 2) {
             try {
-                String query = "INSERT INTO keywords(word, user_id) VALUES (?, ?)";
+                String query = "insert into keywords(word, user_id) values (?, ?)";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, word);
                 statement.setInt(2, Login.userId);
@@ -91,8 +97,8 @@ public class JdbcQueries {
     // Вставка нового источника
     public void addNewSource(String source, String link, String country, ParserType parserType) {
         try {
-            String query = "INSERT INTO rss_list(source, link, is_active, user_id, country, parser_type) " +
-                    "VALUES (?, ?, 1, ?, ?, ?)";
+            String query = "insert into rss_list(source, link, is_active, user_id, country, parser_type) " +
+                    "values (?, ?, 1, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, source);
             statement.setString(2, link);
@@ -116,7 +122,7 @@ public class JdbcQueries {
     // Вставка слова для исключения из анализа частоты употребления слов
     public void addExcludedWord(String word) {
         try {
-            String query = "INSERT INTO exclude(word, user_id) VALUES (?, ?)";
+            String query = "insert into exclude(word, user_id) values (?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, word);
             statement.setInt(2, Login.userId);
@@ -136,7 +142,7 @@ public class JdbcQueries {
     // Вставка избранных заголовков
     public void addFavoriteTitle(String title, String link) {
         try {
-            String query = "INSERT INTO favorites(title, link, user_id) VALUES (?, ?, ?)";
+            String query = "insert into favorites(title, link, user_id) values (?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, title);
             statement.setString(2, link);
@@ -156,9 +162,9 @@ public class JdbcQueries {
     // вставка кода по заголовку для отсеивания ранее обнаруженных новостей
     public void addTitles(String title, String type) {
         try {
-            String query = "INSERT INTO titles(title, type, user_id) VALUES (?, ?, ?)";
+            String query = "insert into titles(title, type, user_id) values (?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, title);
+            statement.setString(1, Common.getHash(title).substring(0, 10));
             statement.setString(2, type);
             statement.setInt(3, Login.userId);
             statement.executeUpdate();
@@ -172,7 +178,7 @@ public class JdbcQueries {
     public void addWordToExcludeTitles(String word) {
         if (word != null && word.length() > 2) {
             try {
-                String query = "INSERT INTO excluded_headlines(word, user_id) VALUES (?, ?)";
+                String query = "insert into excluded_headlines(word, user_id) values (?, ?)";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, word);
                 statement.setInt(2, Login.userId);
@@ -194,7 +200,7 @@ public class JdbcQueries {
     // вставка нового события
     public void addDate(String type, String description, int day, int month, int year) {
         try {
-            String query = "INSERT INTO dates(type, description, day, month, year, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "insert into dates(type, description, day, month, year, user_id) values (?, ?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, type);
             statement.setString(2, description);
@@ -216,7 +222,7 @@ public class JdbcQueries {
 
     public boolean addUser(String username, String password) {
         try {
-            String query = "INSERT INTO users(username, password) VALUES (?, ?)";
+            String query = "insert into users(username, password) values (?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, username);
             statement.setString(2, password);
@@ -236,7 +242,7 @@ public class JdbcQueries {
     // вставка нового правила для установки ощущений
     public void addAutoFeelingRule(String like, String feeling, Integer weight) {
         try {
-            String query = "INSERT INTO feelings(like, feeling, weight, user_id) VALUES (?, ?, ?, ?)";
+            String query = "insert into feelings(like, feeling, weight, user_id) values (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, like);
             statement.setString(2, feeling);
@@ -254,13 +260,13 @@ public class JdbcQueries {
         }
     }
 
-    /* SELECT */
+    /* select */
     // Источники новостей
     public List<Source> getSources(String type) {
         List<Source> sources = new ArrayList<>();
         try {
-            String query = "SELECT id, source, link, is_active, position, country FROM rss_list " +
-                    "WHERE is_active = 1 AND user_id = ? ORDER BY position";
+            String query = "select id, source, link, is_active, position, country from rss_list " +
+                    "where is_active = 1 and user_id = ? order by position";
 
             getAllRssById(type, sources, query);
         } catch (Exception e) {
@@ -271,8 +277,8 @@ public class JdbcQueries {
 
     private void getAllRssById(String type, List<Source> sources, String query) throws SQLException {
         if (type.equals("all")) {
-            query = "SELECT id, source, link, is_active, position, country FROM rss_list WHERE user_id = ? " +
-                    "ORDER BY is_active DESC, position";
+            query = "select id, source, link, is_active, position, country from rss_list where user_id = ? " +
+                    "order by is_active desc, position";
         }
 
         PreparedStatement statement = connection.prepareStatement(query);
@@ -296,7 +302,7 @@ public class JdbcQueries {
     // Настройки по ключу
     public String getSetting(String key) {
         String setting = null;
-        String query = "SELECT value FROM settings WHERE key = ? AND (user_id IS NULL OR user_id = ?)";
+        String query = "select value from settings where key = ? and (user_id is null or user_id = ?)";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -322,9 +328,9 @@ public class JdbcQueries {
 
         try {
             if (type.equals("top-ten")) {
-                query = "SELECT id, word, user_id FROM exclude WHERE user_id = ? ORDER BY id DESC";
+                query = "select id, word, user_id from exclude where user_id = ? order by id desc";
             } else if (type.equals("headline")) {
-                query = "SELECT id, word, user_id FROM excluded_headlines WHERE user_id = ? ORDER BY id DESC";
+                query = "select id, word, user_id from excluded_headlines where user_id = ? order by id desc";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -350,13 +356,13 @@ public class JdbcQueries {
     public List<Dates> getDates(int isActive) {
         List<Dates> dates = new ArrayList<>();
         try {
-            String query = "SELECT type, description, day, month, year, is_active, user_id FROM dates " +
-                    "WHERE user_id = ? " +
-                    "ORDER BY month, day";
+            String query = "select type, description, day, month, year, is_active, user_id from dates " +
+                    "where user_id = ? " +
+                    "order by month, day";
 
             if (isActive == 0) {
-                query = "SELECT type, description, day, month, year, is_active, user_id FROM dates " +
-                        "WHERE is_active = 1 AND user_id = ? ORDER BY month, day";
+                query = "select type, description, day, month, year, is_active, user_id from dates " +
+                        "where is_active = 1 and user_id = ? order by month, day";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -385,7 +391,7 @@ public class JdbcQueries {
     public List<String> getAllUsers() {
         List<String> users = new ArrayList<>();
         try {
-            String query = "SELECT username FROM users WHERE id != 0 ORDER BY id";
+            String query = "select username from users where id != 0 order by id";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -408,12 +414,12 @@ public class JdbcQueries {
             PreparedStatement statement;
 
             if (isActive == 1) {
-                query = "SELECT word, is_active, user_id FROM keywords WHERE user_id = ? and is_active = ? " +
-                        "ORDER BY word";
+                query = "select word, is_active, user_id from keywords where user_id = ? and is_active = ? " +
+                        "order by word";
                 statement = connection.prepareStatement(query);
                 statement.setInt(2, isActive);
             } else {
-                query = "SELECT word, is_active, user_id FROM keywords WHERE user_id = ? ORDER BY is_active DESC, word";
+                query = "select word, is_active, user_id from keywords where user_id = ? order by is_active desc, word";
                 statement = connection.prepareStatement(query);
             }
             statement.setInt(1, Login.userId);
@@ -439,7 +445,7 @@ public class JdbcQueries {
     public List<Favorite> getFavorites() {
         List<Favorite> favorites = new ArrayList<>();
         try {
-            String query = "SELECT title, link, add_date, user_id FROM favorites WHERE user_id = ? ORDER BY add_date";
+            String query = "select title, link, add_date, user_id from favorites where user_id = ? order by add_date";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, Login.userId);
 
@@ -467,7 +473,7 @@ public class JdbcQueries {
         String interval = Common.getStringIntervalForQuery();
 
         try {
-            String query = "SELECT " +
+            String query = "select " +
                     "           title, " +
                     "           feel, " +
                     "           weight, " +
@@ -475,10 +481,10 @@ public class JdbcQueries {
                     "           source, " +
                     "           describe, " +
                     "           link " +
-                    "FROM all_news " +
-                    "WHERE news_date BETWEEN datetime('now', '-'||?, 'localtime') AND datetime('now', 'localtime') " +
-                    "AND title_lower like '%'|| ? ||'%' " +
-                    "ORDER BY pub_date DESC";
+                    "from all_news " +
+                    "where news_date between datetime('now', '-'||?, 'localtime') and datetime('now', 'localtime') " +
+                    "and title_lower like '%'|| ? ||'%' " +
+                    "order by pub_date desc";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, interval);
@@ -518,9 +524,9 @@ public class JdbcQueries {
         String query = null;
         try {
             if (type.equals("link")) {
-                query = "SELECT link FROM all_news WHERE source = ? AND title = ?";
+                query = "select link from all_news where source = ? and title = ?";
             } else if (type.equals("describe")) {
-                query = "SELECT describe FROM all_news WHERE source = ? AND title = ?";
+                query = "select describe from all_news where source = ? and title = ?";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -542,7 +548,7 @@ public class JdbcQueries {
     public int getUserIdByUsername(String username) {
         int id = 0;
         try {
-            String query = "SELECT id FROM users WHERE username = ?";
+            String query = "select id from users where username = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, username);
 
@@ -560,7 +566,7 @@ public class JdbcQueries {
     public String getUsernameById(int userId) {
         String username = "";
         try {
-            String query = "SELECT username FROM users WHERE id = ?";
+            String query = "select username from users where id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, userId);
 
@@ -578,8 +584,8 @@ public class JdbcQueries {
     public List<Feelings> getFeelings() {
         List<Feelings> feelings = new ArrayList<>();
         try {
-            String query = "SELECT like, feeling, weight, user_id, is_active, call_order FROM feelings " +
-                    "ORDER BY like, call_order";
+            String query = "select like, feeling, weight, user_id, is_active, call_order from feelings " +
+                    "order by like, call_order";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -605,7 +611,7 @@ public class JdbcQueries {
     public HashMap<String, Integer> getWeights() {
         HashMap<String, Integer> weights = new HashMap<>();
         try {
-            String query = "SELECT title, weight FROM all_news WHERE weight IS NOT NULL";
+            String query = "select title, weight from all_news where weight is not null";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -627,9 +633,9 @@ public class JdbcQueries {
     public HashMap<String, String> getFeelingsFromAllNews(String interval) {
         HashMap<String, String> feelings = new HashMap<>();
         try {
-            String query = "SELECT distinct title, feel FROM all_news WHERE feel IS NOT NULL " +
-                    " AND news_date BETWEEN datetime('now', '-'||?, 'localtime') " +
-                    "AND datetime('now', 'localtime')";
+            String query = "select distinct title, feel from all_news where feel is not null " +
+                    " and news_date between datetime('now', '-'||?, 'localtime') " +
+                    "and datetime('now', 'localtime')";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, interval);
 
@@ -648,7 +654,7 @@ public class JdbcQueries {
     public String getUserHashPassword(String username) {
         String password = "";
         try {
-            String query = "SELECT password FROM users WHERE username = ?";
+            String query = "select password from users where username = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, username);
 
@@ -666,7 +672,7 @@ public class JdbcQueries {
     public List<String> getInitQueries() {
         List<String> queries = new ArrayList<>();
         try {
-            String query = "SELECT query FROM init_data";
+            String query = "select query from init_data";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -688,10 +694,10 @@ public class JdbcQueries {
             PreparedStatement statement;
             String query;
             if (country.equals("all")) {
-                query = "SELECT query FROM init_rss";
+                query = "select query from init_rss";
                 statement = connection.prepareStatement(query);
             } else {
-                query = "SELECT query FROM init_rss WHERE country = ?";
+                query = "select query from init_rss where country = ?";
                 statement = connection.prepareStatement(query);
                 statement.setString(1, country);
             }
@@ -711,7 +717,7 @@ public class JdbcQueries {
     public List<String> getExcludedItems() {
         List<String> items = new ArrayList<>();
         try {
-            String query = "SELECT word FROM excluded_items";
+            String query = "select word from excluded_items";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -732,19 +738,19 @@ public class JdbcQueries {
         try {
             String query = null;
             if (activeWindow == 2) {
-                query = "DELETE FROM rss_list WHERE source = ? and user_id = ?";
+                query = "delete from rss_list where source = ? and user_id = ?";
             } else if (activeWindow == 3) {
-                query = "DELETE FROM exclude WHERE word = ? and user_id = ?";
+                query = "delete from exclude where word = ? and user_id = ?";
             } else if (activeWindow == 4) {
-                query = "DELETE FROM excluded_headlines WHERE word = ? and user_id = ?";
+                query = "delete from excluded_headlines where word = ? and user_id = ?";
             } else if (activeWindow == 5) {
-                query = "DELETE FROM keywords WHERE word = ? AND user_id = ?";
+                query = "delete from keywords where word = ? and user_id = ?";
             } else if (activeWindow == 6) {
-                query = "DELETE FROM favorites WHERE title = ? AND user_id = ?";
+                query = "delete from favorites where title = ? and user_id = ?";
             } else if (activeWindow == 7) {
-                query = "DELETE FROM dates WHERE type||' '||description = ? AND user_id = ?";
+                query = "delete from dates where type||' '||description = ? and user_id = ?";
             } else if (activeWindow == 8) {
-                query = "DELETE FROM feelings WHERE like = ? AND (user_id IS NOT NULL OR user_id = ?)";
+                query = "delete from feelings where like = ? and (user_id is not null or user_id = ?)";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -764,7 +770,7 @@ public class JdbcQueries {
     // Очистка данных любой передаваемой таблицы
     public void removeFromTitles() {
         try {
-            String query = "DELETE FROM titles where user_id = ?";
+            String query = "delete from titles where user_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, Login.userId);
             statement.executeUpdate();
@@ -777,7 +783,7 @@ public class JdbcQueries {
     // Очистка данных любой передаваемой таблицы
     public void removeFromRssList(String country, String source) {
         try {
-            String query = "DELETE FROM rss_list where user_id = ? and country = ? and source = ?";
+            String query = "delete from rss_list where user_id = ? and country = ? and source = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, Login.userId);
             statement.setString(2, country);
@@ -797,14 +803,14 @@ public class JdbcQueries {
         try {
             // "on delete cascade" doesn't work
             String[] removeCascade = {
-                    "DELETE FROM dates WHERE user_id = ?",
-                    "DELETE FROM exclude WHERE user_id = ?",
-                    "DELETE FROM excluded_headlines WHERE user_id = ?",
-                    "DELETE FROM favorites WHERE user_id = ?",
-                    "DELETE FROM keywords WHERE user_id = ?",
-                    "DELETE FROM rss_list WHERE user_id = ?",
-                    "DELETE FROM settings WHERE user_id = ?",
-                    "DELETE FROM users where id = ?"
+                    "delete from dates where user_id = ?",
+                    "delete from exclude where user_id = ?",
+                    "delete from excluded_headlines where user_id = ?",
+                    "delete from favorites where user_id = ?",
+                    "delete from keywords where user_id = ?",
+                    "delete from rss_list where user_id = ?",
+                    "delete from settings where user_id = ?",
+                    "delete from users where id = ?"
             };
             connection.setAutoCommit(false);
             for (String query : removeCascade) {
@@ -824,10 +830,10 @@ public class JdbcQueries {
     public boolean isTitleExists(String title, String type) {
         int isExists = 0;
         try {
-            String query = "SELECT EXISTS (SELECT 1 FROM titles WHERE title = ? and type = ? and user_id = ?)";
+            String query = "select exists(select 1 from titles where title = ? and type = ? and user_id = ?)";
 
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, title);
+            statement.setString(1, Common.getHash(title).substring(0, 10));
             statement.setString(2, type);
             statement.setInt(3, Login.userId);
 
@@ -847,7 +853,7 @@ public class JdbcQueries {
     public int archiveNewsCount() {
         int countNews = 0;
         try {
-            String query = "SELECT COUNT(*) FROM ALL_NEWS";
+            String query = "select count(*) from all_news";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -866,7 +872,7 @@ public class JdbcQueries {
     public int usersCount() {
         int count = 0;
         try {
-            String query = "SELECT COUNT(*) FROM users";
+            String query = "select count(*) from users";
             PreparedStatement statement = connection.prepareStatement(query);
 
             ResultSet rs = statement.executeQuery();
@@ -884,7 +890,7 @@ public class JdbcQueries {
     // Обновление настроек
     public void updateSettings(String key, String value) {
         try {
-            String query = "UPDATE settings SET value = ? WHERE key = ? AND user_id = ?";
+            String query = "update settings set value = ? where key = ? and user_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, value);
             statement.setString(2, key);
@@ -899,8 +905,8 @@ public class JdbcQueries {
     // Добавление веса новости
     public void updateWeight(String title, int value) {
         try {
-            String query = "UPDATE all_news SET weight = ?, add_weight_user_id = ?, " +
-                    "add_weight_date = datetime('now', 'localtime') WHERE title = ?";
+            String query = "update all_news set weight = ?, add_weight_user_id = ?, " +
+                    "add_weight_date = datetime('now', 'localtime') where title = ?";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, value);
@@ -916,8 +922,8 @@ public class JdbcQueries {
     // Добавление чувств после прочтения новости
     public void updateFeeling(String title, String value) {
         try {
-            String query = "UPDATE all_news SET feel = ?, add_feel_user_id = ?, " +
-                    "add_feel_date = datetime('now', 'localtime') WHERE title = ?";
+            String query = "update all_news set feel = ?, add_feel_user_id = ?, " +
+                    "add_feel_date = datetime('now', 'localtime') where title = ?";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, value);
@@ -936,14 +942,14 @@ public class JdbcQueries {
             String query;
 
             if (type.equals("feel")) {
-                query = "UPDATE feelings SET feeling = ?, update_user_id = ?, " +
-                        "update_date = datetime('now', 'localtime') WHERE like = ?";
+                query = "update feelings set feeling = ?, update_user_id = ?, " +
+                        "update_date = datetime('now', 'localtime') where like = ?";
             } else if (type.equals("call-order")) {
-                query = "UPDATE feelings SET call_order = ?, update_user_id = ?, " +
-                        "update_date = datetime('now', 'localtime') WHERE like = ?";
+                query = "update feelings set call_order = ?, update_user_id = ?, " +
+                        "update_date = datetime('now', 'localtime') where like = ?";
             } else {
-                query = "UPDATE feelings SET weight = ?, update_user_id = ?, " +
-                        "update_date = datetime('now', 'localtime') WHERE like = ?";
+                query = "update feelings set weight = ?, update_user_id = ?, " +
+                        "update_date = datetime('now', 'localtime') where like = ?";
             }
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -963,13 +969,13 @@ public class JdbcQueries {
         try {
             switch (type) {
                 case "rss":
-                    query = "UPDATE rss_list SET is_active = ? WHERE source = ? AND user_id = ?";
+                    query = "update rss_list set is_active = ? where source = ? and user_id = ?";
                     break;
                 case "keywords":
-                    query = "UPDATE keywords SET is_active = ? WHERE word = ? and user_id = ?";
+                    query = "update keywords set is_active = ? where word = ? and user_id = ?";
                     break;
                 case "feel":
-                    query = "UPDATE feelings SET is_active = ? WHERE like = ? and user_id = ?";
+                    query = "update feelings set is_active = ? where like = ? and user_id = ?";
                     break;
             }
 
@@ -986,7 +992,7 @@ public class JdbcQueries {
 
     public void updateIsActiveDates(boolean check, String type, String description) {
         try {
-            String query = "UPDATE dates SET is_active = ? WHERE type = ? and description = ? and main.dates.user_id = ?";
+            String query = "update dates set is_active = ? where type = ? and description = ? and main.dates.user_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setBoolean(1, check);
             statement.setString(2, type);
@@ -1001,7 +1007,7 @@ public class JdbcQueries {
 
     public void updateIsActiveCountry(boolean check, String country, String source) {
         try {
-            String query = "UPDATE rss_list SET is_active = ? WHERE country = ? and source = ? and user_id = ?";
+            String query = "update rss_list set is_active = ? where country = ? and source = ? and user_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setBoolean(1, check);
             statement.setString(2, country);
@@ -1016,7 +1022,7 @@ public class JdbcQueries {
 
     public void updateRssPosition(int position, String country, String source) {
         try {
-            String query = "UPDATE rss_list SET position = ? WHERE country = ? and source = ? and user_id = ?";
+            String query = "update rss_list set position = ? where country = ? and source = ? and user_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, position);
             statement.setString(2, country);
@@ -1051,7 +1057,7 @@ public class JdbcQueries {
 
     public void updateUserPassword(int id, String newPassword) {
         try {
-            String query = "UPDATE users SET password = ? WHERE id = ?";
+            String query = "update users set password = ? where id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, newPassword);
             statement.setInt(2, id);
@@ -1069,7 +1075,7 @@ public class JdbcQueries {
                 "(select weight from feelings where is_active = 1 and like like '%' || ? || '%' order by call_order)," +
                 "       add_feel_user_id = ?," +
                 "       add_feel_date = datetime('now', 'localtime')" +
-                " where news_date BETWEEN datetime('now', '-7 days', 'localtime') AND datetime('now', 'localtime') " +
+                " where news_date between datetime('now', '-7 days', 'localtime') and datetime('now', 'localtime') " +
                 "   and title_lower like '%' || ? || '%'" +
                 "   and feel is null" +
                 "   and weight is null";

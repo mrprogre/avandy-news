@@ -59,10 +59,10 @@ public class Common {
             new String[]{"all", "Russia", "USA", "France", "Germany", "UK", "Africa"});
     public static final int READ_TIMEOUT = 3000;
     public static final int CONNECT_TIMEOUT = 3000;
+    public static final int MIN_TITLE_LENGTH = 15;
 
     // создание файлов и директорий
     public static void createFiles() {
-        // main directory create
         File mainDirectory = new File(DIRECTORY_PATH);
         if (!mainDirectory.exists()) mainDirectory.mkdirs();
 
