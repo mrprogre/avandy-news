@@ -5,7 +5,9 @@ import com.avandy.news.database.JdbcQueries;
 import com.avandy.news.database.SQLite;
 import com.avandy.news.export.ExportToCsv;
 import com.avandy.news.export.ExportToExcel;
+import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
+import com.avandy.news.model.SearchType;
 import com.avandy.news.search.Search;
 import com.avandy.news.utils.*;
 import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
@@ -533,11 +535,12 @@ public class Gui extends JFrame {
         getContentPane().add(findInLabel);
 
         if (isRussian()) {
-            resourceCombobox = new JComboBox<>(new String[]{"сети", "архиве"});
+            resourceCombobox = new JComboBox<>(new String[]{FindWay.WEB_RUS.getType(),
+                    FindWay.ARCHIVE_RUS.getType()});
             resourceCombobox.setBounds(topLeftX + 50, topLeftY, 70, 22);
             topLeftX += 23;
         } else {
-            resourceCombobox = new JComboBox<>(new String[]{"rss", "arc"});
+            resourceCombobox = new JComboBox<>(new String[]{FindWay.WEB.getType(), FindWay.ARCHIVE.getType()});
             resourceCombobox.setBounds(topLeftX + 50, topLeftY, 47, 22);
         }
         resourceCombobox.setFont(GUI_FONT);
@@ -575,10 +578,10 @@ public class Gui extends JFrame {
         searchByKeyword.doClick();
         searchByKeyword.addActionListener(e -> {
             String findWay = String.valueOf(resourceCombobox.getSelectedItem());
-            if (findWay.equals("rss") || findWay.equals("сети")) {
-                new Thread(() -> search.mainSearch("word")).start();
-            } else if (findWay.equals("arc") || findWay.equals("архиве")) {
-                new Thread(() -> search.searchInArchive("word")).start();
+            if (findWay.equals(FindWay.WEB.getType()) || findWay.equals(FindWay.WEB_RUS.getType())) {
+                new Thread(() -> search.mainSearch(SearchType.WORD)).start();
+            } else if (findWay.equals(FindWay.ARCHIVE.getType()) || findWay.equals(FindWay.ARCHIVE_RUS.getType())) {
+                new Thread(() -> search.searchInArchive(SearchType.WORD)).start();
             }
         });
 
@@ -705,10 +708,10 @@ public class Gui extends JFrame {
         getContentPane().add(searchByKeywords);
         searchByKeywords.addActionListener(e -> {
             String findWay = String.valueOf(resourceCombobox.getSelectedItem());
-            if (findWay.equals("rss") || findWay.equals("сети")) {
-                new Thread(() -> search.mainSearch("words")).start();
-            } else if (findWay.equals("arc") || findWay.equals("архиве")) {
-                new Thread(() -> search.searchInArchive("words")).start();
+            if (findWay.equals(FindWay.WEB.getType()) || findWay.equals(FindWay.WEB_RUS.getType())) {
+                new Thread(() -> search.mainSearch(SearchType.WORDS)).start();
+            } else if (findWay.equals(FindWay.ARCHIVE.getType()) || findWay.equals(FindWay.ARCHIVE_RUS.getType())) {
+                new Thread(() -> search.searchInArchive(SearchType.WORDS)).start();
             }
         });
 

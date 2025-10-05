@@ -7,6 +7,7 @@ import com.avandy.news.model.Favorite;
 import com.avandy.news.model.Feelings;
 import com.avandy.news.model.Keyword;
 import com.avandy.news.model.ParserType;
+import com.avandy.news.model.SearchType;
 import com.avandy.news.model.Source;
 import com.avandy.news.utils.Common;
 import com.avandy.news.utils.Login;
@@ -327,7 +328,7 @@ public class JdbcQueries {
         List<Excluded> excludedWords = new ArrayList<>();
 
         try {
-            if (type.equals("top-ten")) {
+            if (type.equals(SearchType.TOP_TEN.getType())) {
                 query = "select id, word, user_id from exclude where user_id = ? order by id desc";
             } else if (type.equals("headline")) {
                 query = "select id, word, user_id from excluded_headlines where user_id = ? order by id desc";

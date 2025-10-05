@@ -7,6 +7,7 @@ import com.avandy.news.gui.Gui;
 import com.avandy.news.gui.Icons;
 import com.avandy.news.gui.TextLang;
 import com.avandy.news.model.Excluded;
+import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.Headline;
 import com.avandy.news.parser.ParserJsoup;
@@ -36,10 +37,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -157,7 +160,7 @@ public class Common {
         String searchSource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
 
         if (Common.isFeelAndWeight()) {
-            if (searchSource.equals("arc") || searchSource.equals("архиве")) {
+            if (searchSource.equals(FindWay.ARCHIVE.getType()) || searchSource.equals(FindWay.ARCHIVE_RUS.getType())) {
                 console("balance of feelings: " + balanceArchive +
                         " (+" + positiveCountArchive + " -" + negativeCountArchive + ")");
             } else {
@@ -682,30 +685,49 @@ public class Common {
     public void fillTopTenWithoutDuplicates(Map<String, Integer> wordsCount) {
         int jaroWinklerLevel = Integer.parseInt(new JdbcQueries().getSetting("jaro-winkler-level"));
         Map<String, Integer> comparedTop10 = new TreeMap<>();
-        List<String> excluded = new ArrayList<>();
+        Set<String> excluded = new HashSet<>();
 
-        for (Map.Entry<String, Integer> topTenWord : wordsCount.entrySet()) {
-            for (Map.Entry<String, Integer> topTenWord2 : wordsCount.entrySet()) {
-                double compare = jaroWinklerCompare(topTenWord.getKey(), topTenWord2.getKey());
+        // Используем массив для избежания двойного сравнения
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(wordsCount.entrySet());
 
-                if (compare != 100 && compare >= jaroWinklerLevel && !excluded.contains(topTenWord.getKey())) {
-                    String commonString = longestCommonSubstring(topTenWord.getKey(), topTenWord2.getKey());
-                    if (commonString.length() > 3)
-                        comparedTop10.put(commonString, comparedTop10.getOrDefault(commonString, 0)
-                                + topTenWord.getValue());
-                    excluded.add(topTenWord.getKey());
+        for (int i = 0; i < entries.size(); i++) {
+            Map.Entry<String, Integer> topTenWord = entries.get(i);
+            String word1 = topTenWord.getKey();
+
+            if (excluded.contains(word1)) continue;
+
+            for (int j = i + 1; j < entries.size(); j++) {
+                Map.Entry<String, Integer> topTenWord2 = entries.get(j);
+                String word2 = topTenWord2.getKey();
+
+                if (excluded.contains(word2)) continue;
+
+                double compare = jaroWinklerCompare(word1, word2);
+
+                if (compare != 100 && compare >= jaroWinklerLevel) {
+                    String commonString = longestCommonSubstring(word1, word2);
+                    if (commonString.length() > 3) {
+                        // Суммируем вклад обоих слов
+                        int currentCount = comparedTop10.getOrDefault(commonString, 0);
+                        comparedTop10.put(commonString, currentCount + topTenWord.getValue() + topTenWord2.getValue());
+                        excluded.add(word1);
+                        excluded.add(word2);
+                        break; // Выходим после первого найденного совпадения
+                    }
                 }
+            }
+        }
+
+        // Удаление исключённых слов из мап слов имеющих общие корни
+        if (!comparedTop10.isEmpty()) {
+            for (Excluded word : Search.excludedWordsTopTen) {
+                comparedTop10.remove(word.getWord());
             }
         }
 
         // сначала отображаются схожие слова
         if (!comparedTop10.isEmpty()) {
-            // Удаление исключённых слов из мап слов имеющих общие корни
-            for (Excluded word : Search.excludedWordsTopTen) {
-                comparedTop10.remove(word.getWord());
-            }
-            if (!comparedTop10.isEmpty())
-                Gui.modelTopTen.addRow(new Object[]{"- - - - - - - " + topTenSimilarText});
+            Gui.modelTopTen.addRow(new Object[]{"- - - - - - - " + topTenSimilarText});
         }
 
         comparedTop10.entrySet().stream()
@@ -713,34 +735,44 @@ public class Common {
                 .forEach(x -> Gui.modelTopTen.addRow(new Object[]{x.getKey(), x.getValue()}));
 
         // потом отображаются уникальные слова
-        if (!comparedTop10.isEmpty() && !wordsCount.isEmpty()) Gui.modelTopTen.addRow(
-                new Object[]{"- - - - - - - " + topTenUniqueText});
+        if (!comparedTop10.isEmpty() && !wordsCount.isEmpty()) {
+            Gui.modelTopTen.addRow(new Object[]{"- - - - - - - " + topTenUniqueText});
+        }
+
         wordsCount.entrySet().stream()
+                .filter(entry -> !excluded.contains(entry.getKey())) // Не показываем слова из групп
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEach(x -> Gui.modelTopTen.addRow(new Object[]{x.getKey(), x.getValue()}));
     }
 
     // поиск общей подстроки (полно всяких: ный, ять, акой, ать)
     private String longestCommonSubstring(String s, String t) {
-        int[][] table = new int[s.length()][t.length()];
-        int longest = 0;
-        String result = "";
+        if (s.isEmpty() || t.isEmpty()) return "";
+
+        int maxLength = 0;
+        int endIndex = 0;
+
+        // Используем один массив и переменную для предыдущего значения
+        int[] dp = new int[t.length()];
+
         for (int i = 0; i < s.length(); i++) {
+            int previous = 0;
             for (int j = 0; j < t.length(); j++) {
-                if (s.charAt(i) != t.charAt(j)) {
-                    continue;
+                int temp = dp[j];
+                if (s.charAt(i) == t.charAt(j)) {
+                    dp[j] = previous + 1;
+                    if (dp[j] > maxLength) {
+                        maxLength = dp[j];
+                        endIndex = i;
+                    }
+                } else {
+                    dp[j] = 0;
                 }
-                table[i][j] = (i == 0 || j == 0) ? 1
-                        : 1 + table[i - 1][j - 1];
-                if (table[i][j] > longest) {
-                    longest = table[i][j];
-                }
-                if (table[i][j] == longest) {
-                    result = s.substring(i - longest + 1, i + 1);
-                }
+                previous = temp;
             }
         }
-        return result;
+
+        return maxLength > 0 ? s.substring(endIndex - maxLength + 1, endIndex + 1) : "";
     }
 
     // Сравнение двух строк методом Джаро-Винклера
@@ -775,6 +807,7 @@ public class Common {
     public boolean isDateValid(int month, int day) {
         try {
             LocalDate localDate = LocalDate.of(1987, month, day);
+            System.out.println(localDate);
         } catch (DateTimeException e) {
             Common.showAlert("Incorrect date format specified");
             return false;

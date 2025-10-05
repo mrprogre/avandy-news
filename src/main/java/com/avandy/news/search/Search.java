@@ -3,7 +3,13 @@ package com.avandy.news.search;
 import com.avandy.news.database.JdbcQueries;
 import com.avandy.news.database.SQLite;
 import com.avandy.news.gui.Gui;
-import com.avandy.news.model.*;
+import com.avandy.news.gui.TextLang;
+import com.avandy.news.model.Excluded;
+import com.avandy.news.model.Headline;
+import com.avandy.news.model.Keyword;
+import com.avandy.news.model.SearchType;
+import com.avandy.news.model.Source;
+import com.avandy.news.model.TopTenRow;
 import com.avandy.news.parser.ParserRome;
 import com.avandy.news.utils.Common;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -12,45 +18,44 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
-import static com.avandy.news.gui.TextLang.*;
-import static com.avandy.news.utils.Common.MIN_TITLE_LENGTH;
+
 
 public class Search {
-    private static final SimpleDateFormat SQL_DATE_FORMAT =
+    private final SimpleDateFormat sqlDateFormat =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private int wordFreqMatches = 3;
-    private final SQLite sqLite;
-    private final JdbcQueries jdbcQueries;
+    private final SQLite sqLite = new SQLite();
+    private final JdbcQueries jdbcQueries = new JdbcQueries();
     private int newsCount = 0;
-    public static AtomicBoolean isStop, isSearchNow, isSearchFinished;
-    public static List<Headline> headlinesList = new ArrayList<>();
+    public static AtomicBoolean isStop = new AtomicBoolean(false);
+    public static AtomicBoolean isSearchNow = new AtomicBoolean(false);
+    public static AtomicBoolean isSearchFinished = new AtomicBoolean(false);
+    private static List<Headline> headlinesList = new ArrayList<>();
     public final Map<String, Integer> topTenWords = new HashMap<>();
     public static List<Excluded> excludedWordsTopTen;
     public HashMap<String, String> titlesFeelings;
     public HashMap<String, Integer> titlesWeight;
 
-    public Search() {
-        sqLite = new SQLite();
-        jdbcQueries = new JdbcQueries();
-        isStop = new AtomicBoolean(false);
-        isSearchNow = new AtomicBoolean(false);
-        isSearchFinished = new AtomicBoolean(false);
-    }
-
-    public void mainSearch(String searchType) {
-        excludedWordsTopTen = jdbcQueries.getExcludedWords("top-ten");
+    public void mainSearch(SearchType searchType) {
+        excludedWordsTopTen = jdbcQueries.getExcludedWords(SearchType.TOP_TEN.getType());
 
         if (!isSearchNow.get()) {
-            boolean isWord = searchType.equals("word");
-            boolean isWords = searchType.equals("words");
-            boolean isTopTen = searchType.equals("top-ten");
+            boolean isWord = searchType == SearchType.WORD;
+            boolean isWords = searchType == SearchType.WORDS;
+            boolean isTopTen = searchType == SearchType.TOP_TEN;
 
             isSearchNow.set(true);
-            Search.isStop.set(false);
+            isStop.set(false);
             LocalTime timeStart = LocalTime.now();
 
             headlinesList.clear();
@@ -116,7 +121,7 @@ public class Search {
                                 // вставка всех без исключения новостей в архив
                                 saveToArchive(headline, title, pubDate);
 
-                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > MIN_TITLE_LENGTH) {
+                                if (newsTitle.contains(Gui.findWord) && newsTitle.length() > Common.MIN_TITLE_LENGTH) {
                                     int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
 
                                     if (dateDiff != 0) {
@@ -126,11 +131,11 @@ public class Search {
 
                                     if (isTopTen) {
                                         if (dateDiff != 0) {
-                                            searchProcess(headline, searchType, isOnlyLastNews);
+                                            searchProcess(headline, searchType.getType(), isOnlyLastNews);
                                         }
                                     } else {
                                         //отсеиваем новости, которые уже были найдены ранее при включенном чекбоксе
-                                        if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
+                                        if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType.getType())) {
                                             continue;
                                         }
 
@@ -143,7 +148,7 @@ public class Search {
                                             }
 
                                             if (dateDiff != 0 && !headline.getTitle().contains("#")) {
-                                                searchProcess(headline, searchType, isOnlyLastNews);
+                                                searchProcess(headline, searchType.getType(), isOnlyLastNews);
                                             }
 
                                             if (dateDiff != 0 && headline.getTitle().contains("#")) {
@@ -151,7 +156,7 @@ public class Search {
                                             }
                                         } else {
                                             if (dateDiff != 0) {
-                                                searchProcess(headline, searchType, isOnlyLastNews);
+                                                searchProcess(headline, searchType.getType(), isOnlyLastNews);
                                             }
                                         }
                                     }
@@ -160,7 +165,7 @@ public class Search {
                                 List<Keyword> keywords = jdbcQueries.getKeywords(1);
 
                                 if (!keywords.isEmpty()) {
-                                    searchByKeywords(searchType, keywords, headline, isOnlyLastNews, title, pubDate);
+                                    searchByKeywords(searchType.getType(), keywords, headline, isOnlyLastNews, title, pubDate);
                                 } else {
                                     Common.showAlert("No keywords to search!");
                                     Gui.stopKeywordsSearch.doClick();
@@ -190,22 +195,16 @@ public class Search {
                     int excludedPercent = (int) Math.round((excludedCount / ((double) newsCount
                             + excludedCount)) * 100);
 
-                    String label = String.format(totalText, newsCount + excludedCount, newsCount, excludedCount,
+                    String label = String.format(TextLang.totalText, newsCount + excludedCount, newsCount, excludedCount,
                             excludedPercent + "%");
 
                     Gui.amountOfNewsLabel.setText(label);
                 } else if (isWords) {
-                    Gui.amountOfNewsLabel.setText(amountOfNewsLabelText + newsCount);
+                    Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + newsCount);
                 }
 
-                // Удаление дубликатов и сортировка новостей
-                headlinesList = headlinesList.stream()
-                        .collect(Collectors.collectingAndThen(
-                                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Headline::getTitle))),
-                                ArrayList::new))
-                        .stream()
-                        .sorted(Collections.reverseOrder())
-                        .collect(Collectors.toList());
+                // Удаляем дубликаты заголовков и сортируем по дате desc
+                removeDuplicatesAndSort();
 
                 /* Начало анализа заголовков */
                 // Авто установка позитив/негатив
@@ -253,7 +252,7 @@ public class Search {
                 }
 
                 // Заполнение таблицы Top-10 в UI с проверкой схожести слов методом Джарро-Винклера
-                wordFreqMatches = searchType.equals("word") ? 5 : 3;
+                wordFreqMatches = (searchType == SearchType.WORD) ? 5 : 3;
                 // отсев редких слов
                 topTenWords.entrySet().removeIf(x -> x.getValue() < wordFreqMatches);
                 // сопоставление слов и заполнение
@@ -262,7 +261,7 @@ public class Search {
                 Gui.WAS_CLICK_IN_TABLE_FOR_ANALYSIS.set(false);
 
                 if (isWord) {
-                    Gui.newsInArchiveLabel.setText(newsInArchiveLabelText + jdbcQueries.archiveNewsCount());
+                    Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + jdbcQueries.archiveNewsCount());
                 }
 
                 Common.calcBalanceFeelingsByPeriod();
@@ -277,10 +276,22 @@ public class Search {
         }
     }
 
-    private void searchByKeywords(String searchType, List<Keyword> keywords, Headline headline, boolean isOnlyLastNews, String title, Date pubDate) {
+    private static void removeDuplicatesAndSort() {
+        Map<String, Headline> uniqueByTitle = new LinkedHashMap<>();
+        for (Headline item : headlinesList) {
+            uniqueByTitle.putIfAbsent(item.getTitle(), item);
+        }
+
+        // Сортируем по дате в обратном порядке (новые первыми)
+        headlinesList = new ArrayList<>(uniqueByTitle.values());
+        headlinesList.sort(Collections.reverseOrder());
+    }
+
+    private void searchByKeywords(String searchType, List<Keyword> keywords, Headline headline,
+                                  boolean isOnlyLastNews, String title, Date pubDate) {
         for (Keyword keyword : keywords) {
             if (headline.getTitle().toLowerCase().contains(keyword.getWord().toLowerCase())
-                    && headline.getTitle().length() > MIN_TITLE_LENGTH) {
+                    && headline.getTitle().length() > Common.MIN_TITLE_LENGTH) {
 
                 // отсеиваем новости которые были обнаружены ранее
                 if (isOnlyLastNews && jdbcQueries.isTitleExists(title, searchType)) {
@@ -312,7 +323,7 @@ public class Search {
 
     private void saveToArchive(Headline headline, String title, Date pubDate) {
         jdbcQueries.addAllTitlesToArchive(title,
-                SQL_DATE_FORMAT.format(pubDate),
+                sqlDateFormat.format(pubDate),
                 headline.getLink(),
                 headline.getSource(),
                 headline.getDescribe());
@@ -364,7 +375,7 @@ public class Search {
         return newsList;
     }
 
-    public void searchInArchive(String searchType) {
+    public void searchInArchive(SearchType searchType) {
         isSearchFinished.set(false);
 
         if (!isSearchNow.get()) {
@@ -378,7 +389,7 @@ public class Search {
             Map<String, Integer> wordsCount = new HashMap<>();
             List<String> newsFromArchive = new ArrayList<>();
 
-            if (searchType.equals("words")) {
+            if (searchType == SearchType.WORDS) {
                 List<Keyword> keywords = jdbcQueries.getKeywords(1);
                 List<String> newsFromArchiveByKeywords;
 
@@ -386,7 +397,7 @@ public class Search {
                     newsFromArchiveByKeywords = jdbcQueries.getNewsFromArchive(keyword.getWord());
                     newsFromArchive.addAll(newsFromArchiveByKeywords);
                 }
-            } else if (searchType.equals("word")) {
+            } else if (searchType == SearchType.WORD) {
                 newsFromArchive = jdbcQueries.getNewsFromArchive(Gui.keyword.getText());
             }
             Gui.amountOfNewsLabel.setText("total: " + newsFromArchive.size());
@@ -401,7 +412,7 @@ public class Search {
             }
 
             // Удаление исключённых слов из мап для анализа
-            List<Excluded> excludedWordsFromAnalysis = jdbcQueries.getExcludedWords("top-ten");
+            List<Excluded> excludedWordsFromAnalysis = jdbcQueries.getExcludedWords(SearchType.TOP_TEN.getType());
             for (Excluded word : excludedWordsFromAnalysis) {
                 wordsCount.remove(word.getWord());
             }
