@@ -269,11 +269,28 @@ public class Dialogs extends JDialog implements KeyListener {
                 addPanel.add(word);
 
                 JButton addButton = new JButton("add word");
+                addButton.setToolTipText(TextLang.addWordsWithComma);
                 addButton.setForeground(FONT_COLOR);
                 addButton.addActionListener(e -> {
                     if (!word.getText().isEmpty()) {
                         saveDialogPosition(nameXY);
-                        jdbcQueries.addWordToExcludeTitles(word.getText());
+
+                        // удаляем все пробелы
+                        String text = delSpacesAndLower(word);
+
+                        if (text.contains(",")) {
+                            // Разбиваем по запятым и добавляем каждое слово в цикле
+                            String[] words = text.split(",");
+                            for (String singleWord : words) {
+                                if (singleWord.length() > 2) {
+                                    jdbcQueries.addWordToExcludeTitles(singleWord);
+                                }
+                            }
+                        } else {
+                            // Если запятых нет, добавляем всё слово
+                            jdbcQueries.addWordToExcludeTitles(text);
+                        }
+
                         this.setVisible(false);
                         new Dialogs("dialog_excluded_headlines");
                         setDialogPosition(nameXY);
@@ -336,11 +353,28 @@ public class Dialogs extends JDialog implements KeyListener {
                 addPanel.add(word);
 
                 JButton addButton = new JButton("add word");
+                addButton.setToolTipText(TextLang.addWordsWithComma);
                 addButton.setForeground(FONT_COLOR);
                 addButton.addActionListener(e -> {
                     if (!word.getText().isEmpty()) {
                         saveDialogPosition(nameXY);
-                        jdbcQueries.addKeyword(word.getText());
+
+                        // удаляем все пробелы
+                        String text = delSpacesAndLower(word);
+
+                        if (text.contains(",")) {
+                            // Разбиваем по запятым и добавляем каждое слово в цикле
+                            String[] words = text.split(",");
+                            for (String singleWord : words) {
+                                if (singleWord.length() > 2) {
+                                    jdbcQueries.addKeyword(singleWord);
+                                }
+                            }
+                        } else {
+                            // Если запятых нет, добавляем всё слово
+                            jdbcQueries.addKeyword(word.getText());
+                        }
+
                         this.setVisible(false);
                         new Dialogs("dialog_keywords");
                         setDialogPosition(nameXY);
@@ -794,6 +828,10 @@ public class Dialogs extends JDialog implements KeyListener {
         });
 
         dialogName = nameXY;
+    }
+
+    private static String delSpacesAndLower(JTextField word) {
+        return word.getText().replaceAll("\\s+", "").toLowerCase();
     }
 
     private void showRightClickMenu() {
