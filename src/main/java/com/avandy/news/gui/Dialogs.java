@@ -831,7 +831,7 @@ public class Dialogs extends JDialog implements KeyListener {
     }
 
     private static String delSpacesAndLower(JTextField word) {
-        return word.getText().replaceAll("\\s+", "").toLowerCase();
+        return word.getText().trim().toLowerCase();
     }
 
     private void showRightClickMenu() {
