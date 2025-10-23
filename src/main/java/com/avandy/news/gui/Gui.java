@@ -197,7 +197,8 @@ public class Gui extends JFrame {
         mainTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         mainTable.setFont(new Font(tableFontName, Font.PLAIN, mainHeaderFontSize));
         // Object[] MAIN_TABLE_HEADERS = {"Num", "Title", "Source", "Link", "Description", "Feel", "Wt", "Date"};
-        mainTable.getColumnModel().getColumn(getColumnIndex("Num")).setMaxWidth(40);
+        mainTable.getColumnModel().getColumn(getColumnIndex("Num")).setPreferredWidth(40);
+        mainTable.getColumnModel().getColumn(getColumnIndex("Num")).setMaxWidth(80);
         mainTable.getColumnModel().getColumn(getColumnIndex("Title")).setPreferredWidth(490);
         mainTable.getColumnModel().getColumn(getColumnIndex("Source")).setPreferredWidth(100);
         mainTable.getColumnModel().getColumn(getColumnIndex("Source")).setMaxWidth(180);

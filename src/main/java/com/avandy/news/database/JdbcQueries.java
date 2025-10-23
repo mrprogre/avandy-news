@@ -111,8 +111,7 @@ public class JdbcQueries {
         } catch (Exception e) {
             if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
                 Common.showAlert("Link: " + link + " is already in the list");
-            }
-            else {
+            } else {
                 Common.showAlert("При добавлении источника возникла ошибка: " + e.getMessage());
             }
         }
@@ -350,6 +349,27 @@ public class JdbcQueries {
         } catch (Exception e) {
             Common.showAlert("getExcludedWords error: " + e.getMessage());
         }
+        return excludedWords;
+    }
+
+    public List<String> getExcludedWords() {
+        String query = "select word from excluded_headlines where user_id = ? order by word";
+        List<String> excludedWords = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, Login.userId);
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                excludedWords.add(rs.getString("word"));
+            }
+            rs.close();
+            statement.close();
+        } catch (Exception e) {
+            Common.showAlert("getExcludedWords error: " + e.getMessage());
+        }
+
         return excludedWords;
     }
 

@@ -65,7 +65,6 @@ public class Search {
             Gui.modelMain.setRowCount(0);
             if (!Gui.WAS_CLICK_IN_TABLE_FOR_ANALYSIS.get()) Gui.modelTopTen.setRowCount(0);
             newsCount = 0;
-            int excludedCount = 0;
             Gui.amountOfNewsLabel.setText(String.valueOf(newsCount));
             isSearchFinished = new AtomicBoolean(false);
 
@@ -79,7 +78,6 @@ public class Search {
 
             try {
                 Headline headline;
-                List<Excluded> excludedTitles = jdbcQueries.getExcludedWords("headline");
                 List<Source> sourcesList = jdbcQueries.getSources("active");
                 sqLite.transaction("BEGIN TRANSACTION");
 
@@ -140,20 +138,10 @@ public class Search {
                                         }
 
                                         if (Gui.findWord.isEmpty()) {
-                                            // замена не интересующих заголовков в UI на # + слово исключение
-                                            for (Excluded excludedTitle : excludedTitles) {
-                                                if (excludedTitle.getWord().length() > 2 && newsTitle.contains(excludedTitle.getWord())) {
-                                                    headline.setTitle("# " + excludedTitle);
-                                                }
-                                            }
-
-                                            if (dateDiff != 0 && !headline.getTitle().contains("#")) {
+                                            if (dateDiff != 0) {
                                                 searchProcess(headline, searchType.getType(), isOnlyLastNews);
                                             }
 
-                                            if (dateDiff != 0 && headline.getTitle().contains("#")) {
-                                                ++excludedCount;
-                                            }
                                         } else {
                                             if (dateDiff != 0) {
                                                 searchProcess(headline, searchType.getType(), isOnlyLastNews);
@@ -190,21 +178,24 @@ public class Search {
                 Common.console("search completed in " + Duration.between(timeStart, LocalTime.now()).getSeconds() + " s.");
                 isSearchNow.set(false);
 
+                // Удаляем дубликаты заголовков и сортируем по дате desc
+                removeDuplicatesAndSort(jdbcQueries.getExcludedWords());
+
                 // Итоги поиска
                 if (isWord) {
-                    int excludedPercent = (int) Math.round((excludedCount / ((double) newsCount
-                            + excludedCount)) * 100);
+                    int excludedCount = newsCount - headlinesList.size();
+                    int excludedPercent = (int) Math.round((excludedCount / ((double) newsCount)) * 100);
 
-                    String label = String.format(TextLang.totalText, newsCount + excludedCount, newsCount, excludedCount,
+                    String label = String.format(TextLang.totalText,
+                            newsCount, // total
+                            headlinesList.size(), // shown
+                            excludedCount, // excluded
                             excludedPercent + "%");
 
                     Gui.amountOfNewsLabel.setText(label);
                 } else if (isWords) {
                     Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + newsCount);
                 }
-
-                // Удаляем дубликаты заголовков и сортируем по дате desc
-                removeDuplicatesAndSort();
 
                 /* Начало анализа заголовков */
                 // Авто установка позитив/негатив
@@ -276,8 +267,13 @@ public class Search {
         }
     }
 
-    private static void removeDuplicatesAndSort() {
+    private static void removeDuplicatesAndSort(List<String> excludedTitles) {
         Map<String, Headline> uniqueByTitle = new LinkedHashMap<>();
+
+        for (String word : excludedTitles) {
+            headlinesList.removeIf(x -> x.getTitle().toLowerCase().contains(word));
+        }
+
         for (Headline item : headlinesList) {
             uniqueByTitle.putIfAbsent(item.getTitle(), item);
         }
