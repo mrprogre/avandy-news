@@ -396,7 +396,7 @@ public class Search {
             } else if (searchType == SearchType.WORD) {
                 newsFromArchive = jdbcQueries.getNewsFromArchive(Gui.keyword.getText());
             }
-            Gui.amountOfNewsLabel.setText("total: " + newsFromArchive.size());
+            Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + newsFromArchive.size());
 
             for (String title : newsFromArchive) {
                 String[] substr = title.split(" ");

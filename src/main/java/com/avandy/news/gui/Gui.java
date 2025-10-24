@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -150,7 +151,7 @@ public class Gui extends JFrame {
             // tooltips
             public String getToolTipText(MouseEvent e) {
                 String tip = null;
-                java.awt.Point p = e.getPoint();
+                Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
                 int colIndex = getColumnIndex("Title");
                 try {
@@ -852,7 +853,8 @@ public class Gui extends JFrame {
                         String valueAt = (String) topTenTable.getModel().getValueAt(row, 0);
                         Gui.keyword.setText(valueAt);
                         // выбор все новостей из архива по слову из топ 10
-                        new Thread(() -> jdbcQueries.getNewsFromArchive(valueAt.toLowerCase())).start();
+                        List<String> newsFromArchive = jdbcQueries.getNewsFromArchive(valueAt.toLowerCase());
+                        Gui.amountOfNewsLabel.setText(amountOfNewsLabelText + newsFromArchive.size());
                         WAS_CLICK_IN_TABLE_FOR_ANALYSIS.set(true);
                     }
                 }
