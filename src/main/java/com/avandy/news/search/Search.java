@@ -238,7 +238,7 @@ public class Search {
 
                 // Удаление исключённых слов из мап для анализа
                 for (Excluded word : excludedWordsTopTen) {
-                    topTenWords.remove(word.getWord());
+                    topTenWords.remove(word.getWord().toLowerCase());
                 }
 
                 // Заполнение таблицы Top-10 в UI с проверкой схожести слов методом Джарро-Винклера
