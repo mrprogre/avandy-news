@@ -181,7 +181,7 @@ public class Search {
                 removeDuplicatesAndSort(jdbcQueries.getExcludedWords(), searchType);
 
                 // Итоги поиска
-                if (isWord) {
+                if (isWord && Gui.findWord.isEmpty()) {
                     int excludedCount = newsCount - headlinesList.size();
                     int excludedPercent = (int) Math.round((excludedCount / ((double) newsCount)) * 100);
 
@@ -192,7 +192,7 @@ public class Search {
                             excludedPercent + "%");
 
                     Gui.amountOfNewsLabel.setText(label);
-                } else if (isWords) {
+                } else {
                     Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + headlinesList.size());
                 }
 
@@ -269,7 +269,7 @@ public class Search {
     private static void removeDuplicatesAndSort(List<String> excludedTitles, SearchType searchType) {
         Map<String, Headline> uniqueByTitle = new LinkedHashMap<>();
 
-        if (searchType == SearchType.WORD) {
+        if (searchType == SearchType.WORD && Gui.findWord.isEmpty()) {
             for (String word : excludedTitles) {
                 headlinesList.removeIf(x -> x.getTitle().toLowerCase().contains(word));
             }
