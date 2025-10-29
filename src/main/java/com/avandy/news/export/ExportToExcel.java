@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ExportToExcel {
     private final List<Headline> newsList = Search.getDataFromMainTable();
-    private static final String[] HEADERS = {"Num","Title", "Source", "Feel", "Weight", "Date", "Link"};
+    private static final String[] HEADERS = {"Num", "Title", "Source", "Feel", "Weight", "Date", "Link"};
     private static final String[] TOP_TEN_HEADERS = {"Word", "Frequency"};
     private static final String SHEET_FONT = "Arial";
     private static final short SHEET_FONT_SIZE = (short) 13;
@@ -222,7 +222,9 @@ public class ExportToExcel {
                     header.setCellStyle(headerStyle);
                 }
 
-                final List<TopTenRow> topTenList = Search.getDataFromTopTenTable();
+                List<TopTenRow> topTenList = Search.getDataFromTopTenTable();
+                if (topTenList.size() > 65535)
+                    topTenList = topTenList.subList(0, 65534);
 
                 for (int i = 0; i < topTenList.size(); i++) {
                     Row row = sheet.createRow(i + 1);

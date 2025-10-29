@@ -330,9 +330,8 @@ public class Search {
         String[] substr = title.split(" ");
 
         for (String s : substr) {
-            s = Common.keepOnlyLetters(s).toLowerCase();
-
             if (s.length() > 3) {
+                s = Common.keepOnlyLetters(s);
                 topTenWords.put(s, topTenWords.getOrDefault(s, 0) + 1);
             }
         }
@@ -401,8 +400,10 @@ public class Search {
 
             for (String title : newsFromArchive) {
                 String[] substr = title.split(" ");
+
                 for (String s : substr) {
                     if (s.length() > 3) {
+                        s = Common.keepOnlyLetters(s);
                         wordsCount.put(s, wordsCount.getOrDefault(s, 0) + 1);
                     }
                 }

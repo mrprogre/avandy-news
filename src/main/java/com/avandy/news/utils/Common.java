@@ -531,12 +531,7 @@ public class Common {
 
     // Оставляет только буквы
     public static String keepOnlyLetters(String word) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < word.length(); i++) {
-            if (Character.isLetter(word.charAt(i)) || word.contains("-"))
-                sb.append(word.charAt(i));
-        }
-        return sb.toString();
+        return word.replaceAll("[^a-zA-Zа-яА-Я0-9\\-.+ ]", "");
     }
 
     public void showAssistant() {

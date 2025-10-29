@@ -836,7 +836,7 @@ public class Gui extends JFrame {
         topTenTable.setFont(new Font(GUI_FONT_NAME, Font.PLAIN, 14));
         topTenTable.getColumnModel().getColumn(0).setPreferredWidth(140);
         topTenTable.getColumnModel().getColumn(1).setPreferredWidth(40);
-        topTenTable.getColumnModel().getColumn(1).setMaxWidth(40);
+        topTenTable.getColumnModel().getColumn(1).setMaxWidth(80);
         topTenTable.getColumnModel().getColumn(2).setMaxWidth(30);
         //tableForAnalysis.setAutoCreateRowSorter(true);
         topTenScroll.setViewportView(topTenTable);
@@ -1035,11 +1035,9 @@ public class Gui extends JFrame {
         });
 
         JLabel avandyNewsLabel = new JLabel("Avandy News");
-        avandyNewsLabel.setFont(new Font(GUI_FONT_NAME, Font.PLAIN, 18));
+        avandyNewsLabel.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 14));
         avandyNewsLabel.setEnabled(false);
-        avandyNewsLabel.setForeground(new Color(232, 202, 66));
-        avandyNewsLabel.setBounds(bottomLeftX + 240, bottomLeftY - 5, 120, 32);
-        getContentPane().add(avandyNewsLabel);
+        avandyNewsLabel.setForeground(new Color(215, 240, 241));
         animation(avandyNewsLabel);
         avandyNewsLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -1055,6 +1053,9 @@ public class Gui extends JFrame {
         menuBar.add(createShowUrl());
         menuBar.add(createHelp());
         menuBar.add(botLabel);
+
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(avandyNewsLabel);
 
         // Форматирование меню
         menuBar.add(Box.createHorizontalGlue());
