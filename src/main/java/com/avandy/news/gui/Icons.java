@@ -65,4 +65,6 @@ public class Icons {
             .createImage(Icons.class.getResource("/icons/add2.png")));
     public static final ImageIcon ASSISTANT_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
             .createImage(Icons.class.getResource("/icons/assist.png")));
+    public static final ImageIcon TELEGRAM_ICON = new ImageIcon(Toolkit.getDefaultToolkit()
+            .createImage(Icons.class.getResource("/icons/tg.png")));
 }

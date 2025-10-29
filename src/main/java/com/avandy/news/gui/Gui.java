@@ -1023,17 +1023,6 @@ public class Gui extends JFrame {
         });
         animation(loginLabel);
 
-        JLabel botLabel = new JLabel("t.me/bot");
-        botLabel.setForeground(new Color(66, 202, 232));
-        botLabel.setEnabled(false);
-        animation(botLabel);
-        botLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openPage("https://t.me/AvandyNewsBot");
-            }
-        });
-
         JLabel avandyNewsLabel = new JLabel("Avandy News");
         avandyNewsLabel.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 14));
         avandyNewsLabel.setEnabled(false);
@@ -1052,7 +1041,6 @@ public class Gui extends JFrame {
         menuBar.add(createViewMenu());
         menuBar.add(createShowUrl());
         menuBar.add(createHelp());
-        menuBar.add(botLabel);
 
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(avandyNewsLabel);
@@ -1895,9 +1883,16 @@ public class Gui extends JFrame {
             }
         }).start());
 
-        JMenuItem game = new JMenuItem("Play game", Icons.GAME_ICON);
+        JMenuItem bot = new JMenuItem("Telegram bot", Icons.TELEGRAM_ICON);
         KeyStroke ctrlF5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-        game.setAccelerator(ctrlF5);
+        bot.setAccelerator(ctrlF5);
+        bot.addActionListener(e -> {
+            openPage("https://t.me/AvandyNewsBot");
+        });
+
+        JMenuItem game = new JMenuItem("Play game", Icons.GAME_ICON);
+        KeyStroke ctrlF6 = KeyStroke.getKeyStroke(KeyEvent.VK_F6, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+        game.setAccelerator(ctrlF6);
         game.addActionListener(e -> {
             try {
                 String jar = Common.DIRECTORY_PATH + "brain-shake-game.jar";
@@ -1913,6 +1908,7 @@ public class Gui extends JFrame {
         helpMenu.add(support);
         helpMenu.add(showAssistant);
         helpMenu.add(checkForUpdates);
+        helpMenu.add(bot);
         helpMenu.add(game);
         return helpMenu;
     }
