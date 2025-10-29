@@ -84,7 +84,7 @@ public class JdbcQueries {
                 statement.executeUpdate();
                 statement.close();
 
-                Common.console("+ Keyword: \"" + word + "\"");
+                Common.console("\nNew keyword: " + word);
             } catch (Exception e) {
                 if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
                     Common.showAlert("Keyword: " + word + " is already in the list");
@@ -184,7 +184,7 @@ public class JdbcQueries {
                 statement.setInt(2, Login.userId);
                 statement.executeUpdate();
                 statement.close();
-                Common.console("+ Excluded: \"" + word + "\"");
+                Common.console("\nExcluded: " + word);
             } catch (Exception e) {
                 if (e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
                     Common.showAlert("Word: " + word + " is already in the list");

@@ -10,8 +10,8 @@ import javax.swing.*;
 
 public class Main {
     // При обновлении менять версию в поле "ver" version.txt
-    public static final String APP_VERSION = "1.0.0.9";
-    public static final String APP_VERSION_DATE = "27.07.2025";
+    public static final String APP_VERSION = "2.1.0";
+    public static final String APP_VERSION_DATE = "30.10.2025";
 
     public static void main(String[] args) {
         // установка темы окна авторизации

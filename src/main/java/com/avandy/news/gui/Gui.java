@@ -1034,6 +1034,20 @@ public class Gui extends JFrame {
             }
         });
 
+        JLabel avandyNewsLabel = new JLabel("Avandy News");
+        avandyNewsLabel.setFont(new Font(GUI_FONT_NAME, Font.PLAIN, 18));
+        avandyNewsLabel.setEnabled(false);
+        avandyNewsLabel.setForeground(new Color(232, 202, 66));
+        avandyNewsLabel.setBounds(bottomLeftX + 240, bottomLeftY - 5, 120, 32);
+        getContentPane().add(avandyNewsLabel);
+        animation(avandyNewsLabel);
+        avandyNewsLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openPage("https://avandy-news.ru/");
+            }
+        });
+
         // Создание главного меню
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createFileMenu());
@@ -1858,7 +1872,7 @@ public class Gui extends JFrame {
                     if (inputLine.contains("ver")) {
                         String appVer = inputLine.substring(4, inputLine.indexOf(";"));
                         if (Main.APP_VERSION.equals(appVer))
-                            Common.showInfo("You already have the latest version of Avandy News Analysis");
+                            Common.showInfo("You already have the latest version of Avandy News");
                         else {
                             String text = "A new version of the program is available. Download update?";
 

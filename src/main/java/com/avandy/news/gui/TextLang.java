@@ -5,7 +5,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TextLang {
-    public String name, owner, ver, dat, donate, register, registerRusPro, amountOfNewsLabelInitText, findInLabelText, latestNewsCheckboxText, lblKeywordsSearchText,
+    public String name, owner, ver, dat, donate, register, registerRusPro, amountOfNewsLabelInitText, findInLabelText,
+            latestNewsCheckboxText, lblKeywordsSearchText,
             newsInArchiveLabelText, loginLabelText, loginLabelHelloText, loginLabelPwdText, selectText, reloadText,
             reloadDbText, pathToDatabaseText, amountOfNewsLabelText, totalText, transparencyText, languageText,
             interfaceXText, interfaceYText, assistantText, autoFeelText, tableFontNameText, fontSizeText, rowHeightText,
@@ -24,12 +25,12 @@ public class TextLang {
         String uiLang = Common.getUiLang();
 
         if (uiLang.equals("en")) {
-            name = "Avandy News Analysis";
+            name = "Avandy News";
             owner = "Developer: Chernyavskiy Dmitry Andreevich";
             ver = "Version: ";
             dat = " dated ";
             donate = "Donate";
-            amountOfNewsLabelInitText = "Avandy News Analysis";
+            amountOfNewsLabelInitText = "";
             amountOfNewsLabelText = "total: ";
             findInLabelText = "find in";
             latestNewsCheckboxText = " latest news";
@@ -98,12 +99,12 @@ public class TextLang {
             addWordsWithComma = "If there are several words, then separate them with commas";
         } else if (uiLang.equals("ru")) {
             addWordsWithComma = "Если слова несколько, то разделяйте их запятыми";
-            name = "Аванди Ньюс Анализ";
+            name = "Аванди Ньюс";
             owner = "Разработчик: Чернявский Дмитрий Андреевич";
             ver = "Версия: ";
             dat = " дата ";
             donate = "Поддержать проект (Официальный перевод ИП. С данной суммы мы уплатим налог)";
-            amountOfNewsLabelInitText = "Аванди Ньюс Анализ";
+            amountOfNewsLabelInitText = "";
             amountOfNewsLabelText = "Всего: ";
             findInLabelText = "Поиск в";
             latestNewsCheckboxText = " Актуальное";

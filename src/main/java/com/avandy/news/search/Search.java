@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-
 public class Search {
     private final SimpleDateFormat sqlDateFormat =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -179,7 +178,7 @@ public class Search {
                 isSearchNow.set(false);
 
                 // Удаляем дубликаты заголовков и сортируем по дате desc
-                removeDuplicatesAndSort(jdbcQueries.getExcludedWords());
+                removeDuplicatesAndSort(jdbcQueries.getExcludedWords(), searchType);
 
                 // Итоги поиска
                 if (isWord) {
@@ -194,7 +193,7 @@ public class Search {
 
                     Gui.amountOfNewsLabel.setText(label);
                 } else if (isWords) {
-                    Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + newsCount);
+                    Gui.amountOfNewsLabel.setText(TextLang.amountOfNewsLabelText + headlinesList.size());
                 }
 
                 /* Начало анализа заголовков */
@@ -267,11 +266,13 @@ public class Search {
         }
     }
 
-    private static void removeDuplicatesAndSort(List<String> excludedTitles) {
+    private static void removeDuplicatesAndSort(List<String> excludedTitles, SearchType searchType) {
         Map<String, Headline> uniqueByTitle = new LinkedHashMap<>();
 
-        for (String word : excludedTitles) {
-            headlinesList.removeIf(x -> x.getTitle().toLowerCase().contains(word));
+        if (searchType == SearchType.WORD) {
+            for (String word : excludedTitles) {
+                headlinesList.removeIf(x -> x.getTitle().toLowerCase().contains(word));
+            }
         }
 
         for (Headline item : headlinesList) {
