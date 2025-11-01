@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Search {
-    private static final String MANDATORY_NEWS_SYMBOLS = "[^\\p{L}\\p{N}\\s\\p{P}  ®$₽€°×+№]";
+    private static final String MANDATORY_NEWS_SYMBOLS = "[^\\p{L}\\p{N}\\s\\p{P}®$₽€°×+№&]";
     private final SimpleDateFormat sqlDateFormat =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private int wordFreqMatches = 3;
@@ -97,7 +97,13 @@ public class Search {
 
                     try {
                         for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
-                            String title = message.getTitle().replaceAll(MANDATORY_NEWS_SYMBOLS, "");
+                            String title = message.getTitle()
+                                    .replaceAll(MANDATORY_NEWS_SYMBOLS, "")
+                                    .replaceAll("#38;", "")
+                                    .replaceAll("  ", "")
+                                    .replaceAll(" {2,10}", " ")
+                                    .replace('\u00A0', ' ');
+
                             Date pubDate = message.getPublishedDate();
                             String newsDescribe = message.getDescription().getValue()
                                     .trim()
@@ -117,7 +123,8 @@ public class Search {
                                 String newsTitle = headline.getTitle().toLowerCase();
 
                                 // вставка всех без исключения новостей в архив
-                                saveToArchive(headline, title, pubDate);
+                                if (title.length() > Common.MIN_TITLE_LENGTH)
+                                    saveToArchive(headline, title, pubDate);
 
                                 if (newsTitle.contains(Gui.findWord) && newsTitle.length() > Common.MIN_TITLE_LENGTH) {
                                     int dateDiff = Common.compareDatesOnly(new Date(), pubDate);
