@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Search {
+    private static final String MANDATORY_NEWS_SYMBOLS = "[^\\p{L}\\p{N}\\s\\p{P}  ®$₽€°×+№]";
     private final SimpleDateFormat sqlDateFormat =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private int wordFreqMatches = 3;
@@ -96,7 +97,7 @@ public class Search {
 
                     try {
                         for (SyndEntry message : new ParserRome().parseFeed(source.getLink()).getEntries()) {
-                            String title = message.getTitle();
+                            String title = message.getTitle().replaceAll(MANDATORY_NEWS_SYMBOLS, "");
                             Date pubDate = message.getPublishedDate();
                             String newsDescribe = message.getDescription().getValue()
                                     .trim()
