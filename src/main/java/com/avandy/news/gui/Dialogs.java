@@ -282,13 +282,14 @@ public class Dialogs extends JDialog implements KeyListener {
                             // Разбиваем по запятым и добавляем каждое слово в цикле
                             String[] words = text.split(",");
                             for (String singleWord : words) {
+                                singleWord = singleWord.trim();
                                 if (singleWord.length() > 2) {
                                     jdbcQueries.addWordToExcludeTitles(singleWord);
                                 }
                             }
                         } else {
                             // Если запятых нет, добавляем всё слово
-                            jdbcQueries.addWordToExcludeTitles(text);
+                            jdbcQueries.addWordToExcludeTitles(text.trim());
                         }
 
                         this.setVisible(false);
@@ -366,13 +367,14 @@ public class Dialogs extends JDialog implements KeyListener {
                             // Разбиваем по запятым и добавляем каждое слово в цикле
                             String[] words = text.split(",");
                             for (String singleWord : words) {
+                                singleWord = singleWord.trim();
                                 if (singleWord.length() > 2) {
                                     jdbcQueries.addKeyword(singleWord);
                                 }
                             }
                         } else {
                             // Если запятых нет, добавляем всё слово
-                            jdbcQueries.addKeyword(word.getText());
+                            jdbcQueries.addKeyword(word.getText().trim());
                         }
 
                         this.setVisible(false);
