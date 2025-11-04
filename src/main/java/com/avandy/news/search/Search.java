@@ -100,7 +100,8 @@ public class Search {
                             String title = message.getTitle()
                                     .replaceAll(MANDATORY_NEWS_SYMBOLS, "")
                                     .replaceAll("#38;", "")
-                                    .replaceAll("  ", "")
+                                    .replaceAll(" ", " ")
+                                    .replaceAll(" ", " ")
                                     .replaceAll(" {2,10}", " ")
                                     .replace('\u00A0', ' ');
 
