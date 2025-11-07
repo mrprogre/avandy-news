@@ -531,7 +531,7 @@ public class Common {
 
     // Оставляет только буквы
     public static String keepOnlyLetters(String word) {
-        return word.replaceAll("[^a-zA-Zа-яА-Я0-9\\-.+ ]", "").toLowerCase();
+        return word.replaceAll("[^a-zA-Zа-яА-Я0-9ёЁ\\-.+ ]", "").toLowerCase();
     }
 
     public void showAssistant() {
