@@ -1,11 +1,7 @@
 package com.avandy.news.utils;
 
 import com.avandy.news.database.JdbcQueries;
-import com.avandy.news.gui.Dialogs;
-import com.avandy.news.gui.FrameDragListener;
-import com.avandy.news.gui.Gui;
-import com.avandy.news.gui.Icons;
-import com.avandy.news.gui.TextLang;
+import com.avandy.news.gui.*;
 import com.avandy.news.model.Excluded;
 import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
@@ -32,18 +28,8 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.avandy.news.gui.TextLang.*;
@@ -176,7 +162,7 @@ public class Common {
     public String getStringIntervalForQuery() {
         String interval = Objects.requireNonNull(Gui.searchInterval.getSelectedItem())
                 .toString()
-                .replace("all", "87600 hours"); // 87600 hours = 10 years
+                .replace("all", "50 years");
 
         if (interval.contains("min")) {
             interval = interval.replace("min", "minutes");
@@ -292,7 +278,10 @@ public class Common {
     // Считывание конфигураций после запуска интерфейса
     public void getSettingsAfterGui() {
         JdbcQueries jdbcQueries = new JdbcQueries();
-        intervalMapper(jdbcQueries.getSetting("interval"));
+        //intervalMapper(jdbcQueries.getSetting("interval"));
+        String interval = jdbcQueries.getSetting("interval");
+        Gui.searchInterval.setSelectedItem(interval);
+        assistantInterval.setSelectedItem(interval);
         Gui.latestNewsCheckbox.setState(Boolean.parseBoolean(jdbcQueries.getSetting("onlyNewNews")));
         Gui.resourceCombobox.setSelectedItem(jdbcQueries.getSetting("resource"));
         Gui.isOnlyLastNews = Gui.latestNewsCheckbox.getState();
@@ -302,10 +291,7 @@ public class Common {
     // сохранение состояния окна в database.tmp
     public void saveState() {
         JdbcQueries jdbcQueries = new JdbcQueries();
-        String interval = Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString()
-                .replace(" hour", "h")
-                .replace("s", "")
-                .replace(" min", "m");
+        String interval = Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString();
         String resource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
 
         jdbcQueries.updateSettings("interval", interval);
@@ -460,32 +446,6 @@ public class Common {
             return hexString.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    // преобразование интервала
-    private static void intervalMapper(String interval) {
-        switch (interval) {
-            case "1h":
-                Gui.searchInterval.setSelectedItem(interval.replace("h", "") + " hour");
-                assistantInterval.setSelectedItem(interval.replace("h", "") + " hour");
-                break;
-            case "1m":
-            case "5m":
-            case "15m":
-            case "30m":
-            case "45m":
-                Gui.searchInterval.setSelectedItem(interval.replace("m", "") + " min");
-                assistantInterval.setSelectedItem(interval.replace("m", "") + " min");
-                break;
-            case "all":
-                Gui.searchInterval.setSelectedItem("all");
-                assistantInterval.setSelectedItem("all");
-                break;
-            default:
-                Gui.searchInterval.setSelectedItem(interval.replace("h", "") + " hours");
-                assistantInterval.setSelectedItem(interval.replace("h", "") + " hours");
-                break;
         }
     }
 
@@ -809,6 +769,7 @@ public class Common {
         }
         return true;
     }
+
     public static int jaroWinklerCompare(String text1, String text2) {
         return (int) Math.round((1 - new JaroWinklerDistance().apply(text1, text2)) * 100);
     }

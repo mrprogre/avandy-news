@@ -9,7 +9,10 @@ import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.SearchType;
 import com.avandy.news.search.Search;
-import com.avandy.news.utils.*;
+import com.avandy.news.utils.Common;
+import com.avandy.news.utils.Login;
+import com.avandy.news.utils.OsChecker;
+import com.avandy.news.utils.Reminder;
 import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 
 import javax.imageio.ImageIO;
@@ -38,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,8 +57,8 @@ public class Gui extends JFrame {
             "Link"};
     private static final String[] TABLE_FOR_ANALYZE_HEADERS = {"top 10", "freq.", " "};
     public static final Color guiFontColor = new Color(255, 255, 153);
-    public static final String[] INTERVALS = {"1 min", "5 min", "15 min", "30 min", "45 min", "1 hour", "2 hours",
-            "4 hours", "8 hours", "12 hours", "24 hours", "48 hours", "72 hours", "all"};
+    public static final String[] INTERVALS = {"15 min", "30 min", "1 hour", "2 hours",
+            "8 hours", "12 hours", "24 hours", "7 days", "1 month", "3 months", "6 months", "1 year", "all"};
     public static final String[] interfaceLanguages = new String[]{"en", "ru"};
     public static final String[] onOff = new String[]{"on", "off"};
     public static final JComboBox<Integer> WEIGHT_COMBOBOX =
@@ -202,9 +204,9 @@ public class Gui extends JFrame {
         mainTable.getColumnModel().getColumn(getColumnIndex("Num")).setMaxWidth(80);
         mainTable.getColumnModel().getColumn(getColumnIndex("Title")).setPreferredWidth(490);
         mainTable.getColumnModel().getColumn(getColumnIndex("Source")).setPreferredWidth(100);
-        mainTable.getColumnModel().getColumn(getColumnIndex("Source")).setMaxWidth(180);
+        mainTable.getColumnModel().getColumn(getColumnIndex("Source")).setMaxWidth(200);
         mainTable.getColumnModel().getColumn(getColumnIndex("Date")).setPreferredWidth(68);
-        mainTable.getColumnModel().getColumn(getColumnIndex("Date")).setMaxWidth(143);
+        mainTable.getColumnModel().getColumn(getColumnIndex("Date")).setMaxWidth(200);
         mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Description"))); // Скрыть описание
         mainTable.removeColumn(mainTable.getColumnModel().getColumn(getColumnIndex("Link"))); // Скрыть ссылку
         // Если выключена опция показывать в таблице ощущения и их вес
