@@ -333,24 +333,34 @@ public class Common {
         return counter;
     }
 
-    // Интервал поиска/таймера в секундах
+    // Интервал поиска/таймера в минутах
     int getInterval() {
-        int minutes;
-        if (Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString().contains(" min")) {
-            minutes = Integer.parseInt(Objects.requireNonNull(Gui.searchInterval
-                            .getSelectedItem())
-                    .toString()
-                    .replace(" min", ""));
-        } else if (Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString().contains("all")) {
-            minutes = 240000;
-        } else {
-            minutes = Integer.parseInt(Objects.requireNonNull(Gui.searchInterval
-                            .getSelectedItem())
-                    .toString()
-                    .replace(" hour", "")
-                    .replace("s", "")) * 60;
+        String selectedValue = Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString();
+
+        switch (selectedValue) {
+            case "all":
+                return 2400000;
+            case "1 month":
+                return 30 * 24 * 60;
+            case "3 months":
+                return 90 * 24 * 60;
+            case "6 months":
+                return 180 * 24 * 60;
+            case "1 year":
+                return 365 * 24 * 60;
+            default:
+                if (selectedValue.contains("min")) {
+                    return Integer.parseInt(selectedValue.replace(" min", ""));
+                } else if (selectedValue.contains("hour") || selectedValue.contains("hours")) {
+                    int hours = Integer.parseInt(selectedValue.replace(" hour", "").replace(" hours", "").replace("s", ""));
+                    return hours * 60; // часы в минуты
+                } else if (selectedValue.contains("day") || selectedValue.contains("days")) {
+                    int days = Integer.parseInt(selectedValue.replace(" day", "").replace(" days", "").replace("s", ""));
+                    return days * 24 * 60; // дни в минуты
+                } else {
+                    return 1440;
+                }
         }
-        return minutes;
     }
 
     // Сравнение дат для отображения новостей по интервалу (Gui.newsInterval)
