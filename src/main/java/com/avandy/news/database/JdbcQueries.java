@@ -17,8 +17,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JdbcQueries {
     private final Connection connection = SQLite.connection;
@@ -488,28 +490,104 @@ public class JdbcQueries {
         return favorites;
     }
 
-    // Новости по слову из архива
+    /* Новости по слову из архива
+    Варианты поиска:
+        1. по части одного слова: москв
+        2. по нескольким словам: москв,ростов
+        3. одно ищем, два исключаем: росси*москв,ростов
+        4. два ищем, два исключаем: бц,холодов*пожар,похудев
+    */
     public List<String> getNewsFromArchive(String word) {
+        word = word.toLowerCase();
         List<String> headlines = new ArrayList<>();
         String interval = Common.getStringIntervalForQuery();
 
+        List<String> searchWords = new ArrayList<>();
+        List<String> excludeWords = new ArrayList<>();
+
+        // Обработка входной строки
+        int asteriskIndex = word.indexOf("*");
+        if (asteriskIndex >= 0) {
+            // Есть символ * - значит есть слова для поиска и слова для исключения
+            String searchPart = word.substring(0, asteriskIndex);
+            String excludePart = word.substring(asteriskIndex + 1);
+
+            // Разбираем слова для поиска (до *)
+            if (!searchPart.isEmpty()) {
+                searchWords = Arrays.stream(searchPart.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+            }
+
+            // Разбираем слова для исключения (после *)
+            if (!excludePart.isEmpty()) {
+                excludeWords = Arrays.stream(excludePart.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+            }
+        } else {
+            // Нет символа * - значит все слова для поиска (логика ИЛИ)
+            searchWords = Arrays.stream(word.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        // Проверяем, есть ли хотя бы одно слово для поиска
+        if (searchWords.isEmpty()) {
+            Common.showAlert("Не указаны слова для поиска");
+            return headlines;
+        }
+
         try {
-            String query = "select " +
-                    "           title, " +
-                    "           feel, " +
-                    "           weight, " +
-                    "           strftime('%H:%M %d.%m.%Y', news_date) as news_date, " +
-                    "           source, " +
-                    "           describe, " +
-                    "           link " +
-                    "from all_news " +
-                    "where news_date between datetime('now', '-'||?, 'localtime') and datetime('now', 'localtime') " +
-                    "and title_lower like '%'|| ? ||'%' " +
-                    "order by pub_date desc";
+            // Начинаем строить запрос
+            StringBuilder queryBuilder = new StringBuilder(
+                    "select title, feel, weight, strftime('%H:%M %d.%m.%Y', news_date) as news_date, " +
+                            "source, describe, link from all_news " +
+                            "where news_date between datetime('now', '-'||?, 'localtime') and datetime('now', 'localtime') "
+            );
+
+            // Добавляем условия для поиска (OR между словами)
+            queryBuilder.append("and (");
+            for (int i = 0; i < searchWords.size(); i++) {
+                if (i > 0) {
+                    queryBuilder.append(" or ");
+                }
+                queryBuilder.append("title_lower like '%'|| ? ||'%'");
+            }
+            queryBuilder.append(") ");
+
+            // Добавляем условия для исключения слов (AND между условиями исключения)
+            if (!excludeWords.isEmpty()) {
+                queryBuilder.append("and (");
+                for (int i = 0; i < excludeWords.size(); i++) {
+                    if (i > 0) {
+                        queryBuilder.append(" and ");
+                    }
+                    queryBuilder.append("title_lower not like '%'|| ? ||'%'");
+                }
+                queryBuilder.append(") ");
+            }
+            queryBuilder.append("order by pub_date desc");
+            String query = queryBuilder.toString();
 
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, interval);
-            statement.setString(2, word.toLowerCase());
+
+            // Устанавливаем параметры
+            int paramIndex = 1;
+            statement.setString(paramIndex++, interval);
+
+            // Устанавливаем параметры для слов поиска
+            for (String searchWord : searchWords) {
+                statement.setString(paramIndex++, searchWord);
+            }
+
+            // Устанавливаем параметры для слов исключения
+            for (String excludeWord : excludeWords) {
+                statement.setString(paramIndex++, excludeWord);
+            }
 
             ResultSet rs = statement.executeQuery();
             int i = 1;
@@ -517,7 +595,6 @@ public class JdbcQueries {
                 Integer weight = rs.getInt("weight");
                 if (rs.getInt("weight") == 0) weight = null;
 
-                // TODO не работает сортировка по дате при поиске по архиву
                 Gui.modelMain.addRow(new Object[]{
                         i++,
                         rs.getString("title"),

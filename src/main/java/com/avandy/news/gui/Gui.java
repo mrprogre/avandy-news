@@ -552,6 +552,7 @@ public class Gui extends JFrame {
 
         //Keyword field
         keyword = new JTextField(findWord);
+        keyword.setToolTipText("Варианты поиска в архиве: 1. москв 2. москв,росси 3. москв,росси*укра,бпла (всё, что после * исключается из результатов)");
         keyword.setBounds(topLeftX + 104, topLeftY, 100, 22);
         keyword.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 13));
         getContentPane().add(keyword);
