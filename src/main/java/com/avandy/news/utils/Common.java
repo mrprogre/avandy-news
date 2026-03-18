@@ -3,7 +3,6 @@ package com.avandy.news.utils;
 import com.avandy.news.database.JdbcQueries;
 import com.avandy.news.gui.*;
 import com.avandy.news.model.Excluded;
-import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.Headline;
 import com.avandy.news.parser.ParserJsoup;
@@ -143,18 +142,18 @@ public class Common {
         }
         balanceArchive = positiveCountArchive - negativeCountArchive;
 
-        String searchSource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
+        //String searchSource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
 
         if (Common.isFeelAndWeight()) {
-            if (searchSource.equals(FindWay.ARCHIVE.getType()) || searchSource.equals(FindWay.ARCHIVE_RUS.getType())) {
-                console("balance of feelings: " + balanceArchive +
-                        " (+" + positiveCountArchive + " -" + negativeCountArchive + ")");
-            } else {
+//            if (searchSource.equals(FindWay.ARCHIVE.getType()) || searchSource.equals(FindWay.ARCHIVE_RUS.getType())) {
+//                console("balance of feelings: " + balanceArchive +
+//                        " (+" + positiveCountArchive + " -" + negativeCountArchive + ")");
+//            } else {
                 console("balance of feelings:\n" +
                         "actual: " + balanceRSS + " (+" + positiveCount + " -" + negativeCount + ")\n" +
                         "archive: " + balanceArchive + " (+" + positiveCountArchive + " -" + negativeCountArchive + ")"
                 );
-            }
+//            }
         }
     }
 
@@ -283,7 +282,7 @@ public class Common {
         Gui.searchInterval.setSelectedItem(interval);
         assistantInterval.setSelectedItem(interval);
         Gui.latestNewsCheckbox.setState(Boolean.parseBoolean(jdbcQueries.getSetting("onlyNewNews")));
-        Gui.resourceCombobox.setSelectedItem(jdbcQueries.getSetting("resource"));
+        //Gui.resourceCombobox.setSelectedItem(jdbcQueries.getSetting("resource"));
         Gui.isOnlyLastNews = Gui.latestNewsCheckbox.getState();
         Gui.consoleTextArea.setBackground(guiColors.get("tablesColor"));
     }
@@ -292,10 +291,10 @@ public class Common {
     public void saveState() {
         JdbcQueries jdbcQueries = new JdbcQueries();
         String interval = Objects.requireNonNull(Gui.searchInterval.getSelectedItem()).toString();
-        String resource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
+        //String resource = Objects.requireNonNull(Gui.resourceCombobox.getSelectedItem()).toString();
 
         jdbcQueries.updateSettings("interval", interval);
-        jdbcQueries.updateSettings("resource", resource);
+        //jdbcQueries.updateSettings("resource", resource);
         jdbcQueries.updateSettings("onlyNewNews", String.valueOf(Gui.latestNewsCheckbox.getState()));
     }
 

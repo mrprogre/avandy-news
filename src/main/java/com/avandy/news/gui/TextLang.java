@@ -5,8 +5,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TextLang {
-    public String name, owner, ver, dat, donate, register, registerRusPro, amountOfNewsLabelInitText, findInLabelText,
-            latestNewsCheckboxText, lblKeywordsSearchText,
+    public String name, owner, ver, dat, donate, register, registerRusPro, amountOfNewsLabelInitText, getNewsButtonText,
+            latestNewsCheckboxText, lblKeywordsSearchText, findTooltipText, getNewsButtonTooltipText,
             newsInArchiveLabelText, loginLabelText, loginLabelHelloText, loginLabelPwdText, selectText, reloadText,
             reloadDbText, pathToDatabaseText, amountOfNewsLabelText, totalText, transparencyText, languageText,
             interfaceXText, interfaceYText, assistantText, autoFeelText, tableFontNameText, fontSizeText, rowHeightText,
@@ -32,7 +32,13 @@ public class TextLang {
             donate = "Donate";
             amountOfNewsLabelInitText = "";
             amountOfNewsLabelText = "total: ";
-            findInLabelText = "find in";
+            getNewsButtonText = "Get News";
+            getNewsButtonTooltipText = "Download current news from sources";
+            findTooltipText = "Search options:" +
+                    "\n-  trump" +
+                    "\n-  trump, russ" +
+                    "\n-  trump, russ*france, italy (everything after * is excluded from the results)" +
+                    "\n-  do not write anything";
             latestNewsCheckboxText = " latest news";
             lblKeywordsSearchText = "Search by keywords";
             newsInArchiveLabelText = "News in archive: ";
@@ -106,7 +112,13 @@ public class TextLang {
             donate = "Поддержать проект (Официальный перевод ИП. С данной суммы мы уплатим налог)";
             amountOfNewsLabelInitText = "";
             amountOfNewsLabelText = "Всего: ";
-            findInLabelText = "Поиск в";
+            getNewsButtonText = "Новости";
+            getNewsButtonTooltipText = "Скачать актуальные новости из источников";
+            findTooltipText = "Варианты поиска:" +
+                    "\n-  москв" +
+                    "\n-  москв, росси" +
+                    "\n-  москв, росси*укра, бпла (всё, что после * исключается из результатов)" +
+                    "\n-  ничего не писать";
             latestNewsCheckboxText = " Актуальное";
             lblKeywordsSearchText = "Поиск по ключевым словам";
             newsInArchiveLabelText = "Новостей в архиве: ";

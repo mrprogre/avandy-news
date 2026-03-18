@@ -5,7 +5,6 @@ import com.avandy.news.database.JdbcQueries;
 import com.avandy.news.database.SQLite;
 import com.avandy.news.export.ExportToCsv;
 import com.avandy.news.export.ExportToExcel;
-import com.avandy.news.model.FindWay;
 import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.SearchType;
 import com.avandy.news.search.Search;
@@ -57,6 +56,7 @@ public class Gui extends JFrame {
             "Link"};
     private static final String[] TABLE_FOR_ANALYZE_HEADERS = {"top 10", "freq.", " "};
     public static final Color guiFontColor = new Color(255, 255, 153);
+    public static final Color guiFontColor2 = new Color(218, 218, 218);
     public static final String[] INTERVALS = {"15 min", "30 min", "1 hour", "2 hours",
             "8 hours", "12 hours", "24 hours", "7 days", "1 month", "3 months", "6 months", "1 year", "all"};
     public static final String[] interfaceLanguages = new String[]{"en", "ru"};
@@ -72,7 +72,7 @@ public class Gui extends JFrame {
     public static DefaultTableModel modelMain, modelTopTen;
     public static JTextField keyword;
     public static JTextArea consoleTextArea;
-    public static JComboBox<String> searchInterval, resourceCombobox;
+    public static JComboBox<String> searchInterval;
     public static JLabel amountOfNewsLabel, newsInArchiveLabel, loginLabel, searchAnimationLabel;
     public static JButton searchByKeyword, searchByKeywords, stopKeywordSearch, stopKeywordsSearch;
     public static Checkbox latestNewsCheckbox;
@@ -518,42 +518,27 @@ public class Gui extends JFrame {
         int searchAnimationLabelWidth = guiSettings.get("searchAnimationLabelWidth");
 
         //Input keyword
-        JLabel findInLabel = new JLabel(findInLabelText);
-        if (OsChecker.isWindows() && isRussian()) {
-            findInLabel.setBounds(topLeftX, topLeftY, 57, 19);
-            topLeftX += 13;
-        } else findInLabel.setBounds(topLeftX, topLeftY, 50, 19);
+        JButton getNewsButton = new JButton(getNewsButtonText);
+        getNewsButton.setToolTipText(getNewsButtonTooltipText);
+        getNewsButton.setBounds(topLeftX, topLeftY, 85, 22);
+        topLeftX += 10;
 
-        findInLabel.setForeground(new Color(255, 179, 131));
-        findInLabel.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 14));
+        getNewsButton.setForeground(guiFontColor2);
+        getNewsButton.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 11));
         if (OsChecker.isUnix()) {
-            findInLabel.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 13));
-            findInLabel.setBounds(topLeftX, topLeftY + 1, 50, 19);
-
-            if (isRussian()) {
-                findInLabel.setBounds(topLeftX, topLeftY + 1, 59, 19);
-                topLeftX += 19;
-            }
+            getNewsButton.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 13));
+            getNewsButton.setBounds(topLeftX, topLeftY + 1, 50, 19);
         }
-        findInLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        getContentPane().add(findInLabel);
-
-        if (isRussian()) {
-            resourceCombobox = new JComboBox<>(new String[]{FindWay.WEB_RUS.getType(),
-                    FindWay.ARCHIVE_RUS.getType()});
-            resourceCombobox.setBounds(topLeftX + 50, topLeftY, 70, 22);
-            topLeftX += 23;
-        } else {
-            resourceCombobox = new JComboBox<>(new String[]{FindWay.WEB.getType(), FindWay.ARCHIVE.getType()});
-            resourceCombobox.setBounds(topLeftX + 50, topLeftY, 47, 22);
-        }
-        resourceCombobox.setFont(GUI_FONT);
-        getContentPane().add(resourceCombobox);
+        getNewsButton.addActionListener(e -> {
+            new Thread(() -> search.mainSearch(SearchType.WORD)).start();
+        });
+        animation(getNewsButton);
+        getContentPane().add(getNewsButton);
 
         //Keyword field
         keyword = new JTextField(findWord);
-        keyword.setToolTipText("Варианты поиска в архиве: 1. москв 2. москв,росси 3. москв,росси*укра,бпла (всё, что после * исключается из результатов)");
-        keyword.setBounds(topLeftX + 104, topLeftY, 100, 22);
+        keyword.setToolTipText(findTooltipText);
+        keyword.setBounds(topLeftX + 80, topLeftY, 124, 22);
         keyword.setFont(new Font(GUI_FONT_NAME, Font.BOLD, 13));
         getContentPane().add(keyword);
 
@@ -582,12 +567,7 @@ public class Gui extends JFrame {
         searchByKeyword.requestFocus();
         searchByKeyword.doClick();
         searchByKeyword.addActionListener(e -> {
-            String findWay = String.valueOf(resourceCombobox.getSelectedItem());
-            if (findWay.equals(FindWay.WEB.getType()) || findWay.equals(FindWay.WEB_RUS.getType())) {
-                new Thread(() -> search.mainSearch(SearchType.WORD)).start();
-            } else if (findWay.equals(FindWay.ARCHIVE.getType()) || findWay.equals(FindWay.ARCHIVE_RUS.getType())) {
-                new Thread(() -> search.searchInArchive(SearchType.WORD)).start();
-            }
+            new Thread(() -> search.searchInArchive(SearchType.WORD)).start();
         });
 
         //Stop addNewSource
@@ -712,12 +692,7 @@ public class Gui extends JFrame {
         searchByKeywords.setBackground(new Color(154, 237, 196));
         getContentPane().add(searchByKeywords);
         searchByKeywords.addActionListener(e -> {
-            String findWay = String.valueOf(resourceCombobox.getSelectedItem());
-            if (findWay.equals(FindWay.WEB.getType()) || findWay.equals(FindWay.WEB_RUS.getType())) {
-                new Thread(() -> search.mainSearch(SearchType.WORDS)).start();
-            } else if (findWay.equals(FindWay.ARCHIVE.getType()) || findWay.equals(FindWay.ARCHIVE_RUS.getType())) {
-                new Thread(() -> search.searchInArchive(SearchType.WORDS)).start();
-            }
+            new Thread(() -> search.searchInArchive(SearchType.WORDS)).start();
         });
 
         //Stop (bottom)
@@ -933,7 +908,7 @@ public class Gui extends JFrame {
         newsInArchiveLabel.setForeground(guiFontColor);
         newsInArchiveLabel.setFont(GUI_FONT);
         newsInArchiveLabel.setBounds(guiSettings.get("menuArchiveX"), guiSettings.get("menuArchiveY"),
-                140, 14);
+                280, 14);
         getContentPane().add(newsInArchiveLabel);
         animation(newsInArchiveLabel);
 
@@ -1402,6 +1377,20 @@ public class Gui extends JFrame {
                 if (label.isEnabled()) {
                     label.setEnabled(false);
                 }
+            }
+        });
+    }
+
+    public static void animation(JButton exitBtn) {
+        exitBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                exitBtn.setForeground(guiFontColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                exitBtn.setForeground(guiFontColor2);
             }
         });
     }

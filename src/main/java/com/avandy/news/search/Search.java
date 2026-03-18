@@ -17,7 +17,9 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -260,8 +262,12 @@ public class Search {
 
                 Gui.WAS_CLICK_IN_TABLE_FOR_ANALYSIS.set(false);
 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+                String formattedDate = LocalDateTime.now().format(formatter);
+
                 if (isWord) {
-                    Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + jdbcQueries.archiveNewsCount());
+                    Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + jdbcQueries.archiveNewsCount() +
+                            " [" + formattedDate + "]");
                 }
 
                 Common.calcBalanceFeelingsByPeriod();
