@@ -529,7 +529,7 @@ public class Common {
         allNews.setForeground(fontColor);
         allNews.addActionListener(e -> {
             Gui.keyword.setText("");
-            Gui.searchByKeyword.doClick();
+            Gui.getNewsButton.doClick();
             Gui.searchInterval.setSelectedItem(assistantInterval.getSelectedItem());
         });
 
@@ -554,7 +554,7 @@ public class Common {
         oneWordLabel.setFont(font);
         JTextField word = new JTextField(6);
         word.setFont(font);
-        //gui.getInputContext().selectInputMethod(new Locale("ru", "RU"));
+
         JButton oneWord = new JButton(assistFind);
         oneWord.setForeground(fontColor);
         oneWord.addActionListener(e -> {

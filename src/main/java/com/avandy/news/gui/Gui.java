@@ -74,7 +74,7 @@ public class Gui extends JFrame {
     public static JTextArea consoleTextArea;
     public static JComboBox<String> searchInterval;
     public static JLabel amountOfNewsLabel, newsInArchiveLabel, loginLabel, searchAnimationLabel;
-    public static JButton searchByKeyword, searchByKeywords, stopKeywordSearch, stopKeywordsSearch;
+    public static JButton searchByKeyword, searchByKeywords, stopKeywordSearch, stopKeywordsSearch, getNewsButton;
     public static Checkbox latestNewsCheckbox;
     public static JProgressBar progressBar;
     private SystemTray systemTray;
@@ -518,7 +518,7 @@ public class Gui extends JFrame {
         int searchAnimationLabelWidth = guiSettings.get("searchAnimationLabelWidth");
 
         //Input keyword
-        JButton getNewsButton = new JButton(getNewsButtonText);
+        getNewsButton = new JButton(getNewsButtonText);
         getNewsButton.setToolTipText(getNewsButtonTooltipText);
         getNewsButton.setBounds(topLeftX, topLeftY, 85, 22);
         topLeftX += 10;
