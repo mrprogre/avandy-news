@@ -38,6 +38,7 @@ public class TextLang {
                     "\n-  trump" +
                     "\n-  trump, russ" +
                     "\n-  trump, russ*france, italy (everything after * is excluded from the results)" +
+                    "\n-  *france, italy (exclude from the total results for the period)" +
                     "\n-  do not write anything";
             latestNewsCheckboxText = " latest news";
             lblKeywordsSearchText = "Search by keywords";
@@ -118,6 +119,7 @@ public class TextLang {
                     "\n-  москв" +
                     "\n-  москв, росси" +
                     "\n-  москв, росси*укра, бпла (всё, что после * исключается из результатов)" +
+                    "\n-  *укра, бпла (исключить из общих результатов за период)" +
                     "\n-  ничего не писать";
             latestNewsCheckboxText = " Актуальное";
             lblKeywordsSearchText = "Поиск по ключевым словам";

@@ -496,6 +496,7 @@ public class JdbcQueries {
         3. одно ищем, два исключаем: росси*москв,ростов
         4. два ищем, два исключаем: бц,холодов*пожар,похудев
         5. на вход нет слова: поиск всего за период
+        6. на вход нет слова, но есть * для исключения
     */
     public List<String> getNewsFromArchive(String word) {
         List<String> headlines = new ArrayList<>();
@@ -504,14 +505,16 @@ public class JdbcQueries {
         List<String> searchWords = new ArrayList<>();
         List<String> excludeWords = new ArrayList<>();
 
-        // Проверка на пустое значение входного параметра
-        if (word != null && !word.trim().isEmpty()) {
+        // Проверяем, есть ли вообще входной параметр
+        boolean hasInput = word != null && !word.trim().isEmpty();
+
+        if (hasInput) {
             word = word.toLowerCase().trim();
 
             // Обработка входной строки
             int asteriskIndex = word.indexOf("*");
             if (asteriskIndex >= 0) {
-                // Есть символ * - значит есть слова для поиска и слова для исключения
+                // Есть символ * - значит есть слова для поиска (до *) и/или для исключения (после *)
                 String searchPart = word.substring(0, asteriskIndex);
                 String excludePart = word.substring(asteriskIndex + 1);
 
@@ -540,14 +543,14 @@ public class JdbcQueries {
         }
 
         try {
-            // Начинаем строить запрос
+            // Начинаем строить базовый запрос
             StringBuilder queryBuilder = new StringBuilder(
                     "select title, feel, weight, strftime('%H:%M %d.%m.%Y', news_date) as news_date, " +
                             "source, describe, link from all_news " +
                             "where news_date between datetime('now', '-'||?, 'localtime') and datetime('now', 'localtime') "
             );
 
-            // Добавляем условия для поиска, только если есть слова для поиска
+            // Добавляем условия поиска, если есть слова для поиска
             if (!searchWords.isEmpty()) {
                 queryBuilder.append("and (");
                 for (int i = 0; i < searchWords.size(); i++) {
@@ -557,18 +560,24 @@ public class JdbcQueries {
                     queryBuilder.append("title_lower like '%'|| ? ||'%'");
                 }
                 queryBuilder.append(") ");
+            }
 
-                // Добавляем условия для исключения слов (AND между условиями исключения)
-                if (!excludeWords.isEmpty()) {
+            // Добавляем условия исключения, если есть слова для исключения
+            if (!excludeWords.isEmpty()) {
+                // Если нет условий поиска, просто добавляем условия исключения
+                if (searchWords.isEmpty()) {
                     queryBuilder.append("and (");
-                    for (int i = 0; i < excludeWords.size(); i++) {
-                        if (i > 0) {
-                            queryBuilder.append(" and ");
-                        }
-                        queryBuilder.append("title_lower not like '%'|| ? ||'%'");
-                    }
-                    queryBuilder.append(") ");
+                } else {
+                    queryBuilder.append("and (");
                 }
+
+                for (int i = 0; i < excludeWords.size(); i++) {
+                    if (i > 0) {
+                        queryBuilder.append(" and ");
+                    }
+                    queryBuilder.append("title_lower not like '%'|| ? ||'%'");
+                }
+                queryBuilder.append(") ");
             }
 
             queryBuilder.append("order by pub_date desc");
@@ -581,15 +590,13 @@ public class JdbcQueries {
             statement.setString(paramIndex++, interval);
 
             // Устанавливаем параметры для слов поиска, если они есть
-            if (!searchWords.isEmpty()) {
-                for (String searchWord : searchWords) {
-                    statement.setString(paramIndex++, searchWord);
-                }
+            for (String searchWord : searchWords) {
+                statement.setString(paramIndex++, searchWord);
+            }
 
-                // Устанавливаем параметры для слов исключения, если они есть
-                for (String excludeWord : excludeWords) {
-                    statement.setString(paramIndex++, excludeWord);
-                }
+            // Устанавливаем параметры для слов исключения, если они есть
+            for (String excludeWord : excludeWords) {
+                statement.setString(paramIndex++, excludeWord);
             }
 
             ResultSet rs = statement.executeQuery();
