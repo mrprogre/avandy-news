@@ -48,6 +48,7 @@ public class Search {
 
     public void mainSearch(SearchType searchType) {
         excludedWordsTopTen = jdbcQueries.getExcludedWords(SearchType.TOP_TEN.getType());
+        int newsInArchiveStart = jdbcQueries.archiveNewsCount();
 
         if (!isSearchNow.get()) {
             boolean isWord = searchType == SearchType.WORD;
@@ -264,9 +265,15 @@ public class Search {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
                 String formattedDate = LocalDateTime.now().format(formatter);
 
+                int newsInArchiveEnd = jdbcQueries.archiveNewsCount();
+                int archiveDiff = newsInArchiveEnd - newsInArchiveStart;
+
+                String newNewsText = "(+"+ (archiveDiff) + ")";
+                if (archiveDiff == 0) newNewsText = "";
+
                 if (isWord) {
-                    Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + jdbcQueries.archiveNewsCount() +
-                            TextLang.newsInArchiveAtLabelText + formattedDate);
+                    Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + newsInArchiveEnd +
+                                    newNewsText + TextLang.newsInArchiveAtLabelText + formattedDate);
                 }
 
                 jdbcQueries.updateSettings("last_update_news",  formattedDate);
