@@ -904,7 +904,8 @@ public class Gui extends JFrame {
 
         newsInArchiveLabel = new JLabel();
         newsInArchiveLabel.setEnabled(false);
-        newsInArchiveLabel.setText(newsInArchiveLabelText + jdbcQueries.archiveNewsCount());
+        newsInArchiveLabel.setText(newsInArchiveLabelText + jdbcQueries.archiveNewsCount() + newsInArchiveAtLabelText +
+                jdbcQueries.getSetting("last_update_news"));
         newsInArchiveLabel.setForeground(guiFontColor);
         newsInArchiveLabel.setFont(GUI_FONT);
         newsInArchiveLabel.setBounds(guiSettings.get("menuArchiveX"), guiSettings.get("menuArchiveY"),

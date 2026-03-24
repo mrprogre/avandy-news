@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 public class Search {
     private final SimpleDateFormat sqlDateFormat =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -267,8 +266,10 @@ public class Search {
 
                 if (isWord) {
                     Gui.newsInArchiveLabel.setText(TextLang.newsInArchiveLabelText + jdbcQueries.archiveNewsCount() +
-                            " [" + formattedDate + "]");
+                            TextLang.newsInArchiveAtLabelText + formattedDate);
                 }
+
+                jdbcQueries.updateSettings("last_update_news",  formattedDate);
 
                 Common.calcBalanceFeelingsByPeriod();
             } catch (Exception e) {

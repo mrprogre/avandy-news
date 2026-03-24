@@ -10,7 +10,7 @@ public class TextLang {
             newsInArchiveLabelText, loginLabelText, loginLabelHelloText, loginLabelPwdText, selectText, reloadText,
             reloadDbText, pathToDatabaseText, amountOfNewsLabelText, totalText, transparencyText, languageText,
             interfaceXText, interfaceYText, assistantText, autoFeelText, tableFontNameText, fontSizeText, rowHeightText,
-            interfaceColorText, tablesColorText, topTenUniqueText, topTenSimilarText,
+            interfaceColorText, tablesColorText, topTenUniqueText, topTenSimilarText, newsInArchiveAtLabelText,
             tablesAlternateText, fontColorText, databaseReloadText, jaroWinklerText, jaroWinklerText2,
             jaroWinklerText3, jaroWinklerText4, jaroWinklerText5, jaroWinklerText6, jaroWinklerText7,
             rightClickMenuDescribeText, rightClickMenuToFavoritesText, rightClickMenuCopyText,
@@ -43,6 +43,7 @@ public class TextLang {
             latestNewsCheckboxText = " latest news";
             lblKeywordsSearchText = "Search by keywords";
             newsInArchiveLabelText = "News in archive: ";
+            newsInArchiveAtLabelText = " at ";
             loginLabelText = "user: ";
             loginLabelHelloText = "Hello, ";
             loginLabelPwdText = "Right click to change password";
@@ -124,6 +125,7 @@ public class TextLang {
             latestNewsCheckboxText = " Актуальное";
             lblKeywordsSearchText = "Поиск по ключевым словам";
             newsInArchiveLabelText = "Новостей в архиве: ";
+            newsInArchiveAtLabelText = " на ";
             loginLabelText = "пользователь: ";
             loginLabelHelloText = "Привет, ";
             loginLabelPwdText = "Нажмите правой кнопкой, чтобы изменить пароль";
