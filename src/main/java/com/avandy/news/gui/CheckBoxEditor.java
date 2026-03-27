@@ -29,7 +29,7 @@ public class CheckBoxEditor extends DefaultCellEditor implements ItemListener {
         this.fireEditingStopped();
         String columnName = Dialogs.model.getColumnName(1);
         String itemInSecondColumn = (String) Dialogs.table.getValueAt(row, 1);
-        String itemInThirdColumn = (String) Dialogs.table.getValueAt(row, 2);
+        String itemInThirdColumn = String.valueOf(Dialogs.table.getValueAt(row, 2));
 
         switch (columnName) {
             case "Country":
