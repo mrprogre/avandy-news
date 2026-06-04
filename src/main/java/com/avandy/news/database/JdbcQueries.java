@@ -30,16 +30,15 @@ public class JdbcQueries {
     // сохранение всех заголовков в архив
     public void addAllTitlesToArchive(String title, String date, String link, String source, String describe) {
         try {
-            String query = "insert into all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
-                    "values (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
+            String query = "insert into all_news(title, news_date, link, source, describe, pub_date) " +
+                    "values (?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, title);
             statement.setString(2, date);
             statement.setString(3, link);
             statement.setString(4, source);
             statement.setString(5, describe);
-            statement.setString(6, title.toLowerCase());
-            statement.setString(7, date);
+            statement.setString(6, date);
             statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
@@ -54,16 +53,15 @@ public class JdbcQueries {
         boolean isAdded = false;
 
         try {
-            String query = "insert into all_news(title, news_date, link, source, describe, title_lower, pub_date) " +
-                    "values (?, ?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
+            String query = "insert into all_news(title, news_date, link, source, describe, pub_date) " +
+                    "values (?, ?, ?, ?, ?, strftime('%Y-%m-%d', ?))";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, title);
             statement.setString(2, date);
             statement.setString(3, link);
             statement.setString(4, source);
             statement.setString(5, describe);
-            statement.setString(6, title.toLowerCase());
-            statement.setString(7, date);
+            statement.setString(6, date);
             statement.executeUpdate();
             statement.close();
             isAdded = true;
@@ -557,7 +555,7 @@ public class JdbcQueries {
                     if (i > 0) {
                         queryBuilder.append(" or ");
                     }
-                    queryBuilder.append("title_lower like '%'|| ? ||'%'");
+                    queryBuilder.append("LOWER(title) like '%'|| ? ||'%'");
                 }
                 queryBuilder.append(") ");
             }
@@ -575,7 +573,7 @@ public class JdbcQueries {
                     if (i > 0) {
                         queryBuilder.append(" and ");
                     }
-                    queryBuilder.append("title_lower not like '%'|| ? ||'%'");
+                    queryBuilder.append("LOWER(title) not like '%'|| ? ||'%'");
                 }
                 queryBuilder.append(") ");
             }
@@ -1184,7 +1182,7 @@ public class JdbcQueries {
                 "       add_feel_user_id = ?," +
                 "       add_feel_date = datetime('now', 'localtime')" +
                 " where news_date between datetime('now', '-7 days', 'localtime') and datetime('now', 'localtime') " +
-                "   and title_lower like '%' || ? || '%'" +
+                "   and LOWER(title) like '%' || ? || '%'" +
                 "   and feel is null" +
                 "   and weight is null";
         try {
