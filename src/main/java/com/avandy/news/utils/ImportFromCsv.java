@@ -8,8 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -102,8 +104,9 @@ public class ImportFromCsv {
         AtomicInteger errorCount = new AtomicInteger();
         int totalLines = 0;
 
-        // Сначала подсчитываем количество строк в файле
-        try (BufferedReader countReader = new BufferedReader(new FileReader(file))) {
+        // Сначала подсчитываем количество строк в файле (с правильной кодировкой)
+        try (BufferedReader countReader = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8))) {
             String line;
             while ((line = countReader.readLine()) != null) {
                 // Пропускаем пустые строки и заголовок
@@ -121,7 +124,7 @@ public class ImportFromCsv {
         progressBar.setStringPainted(true);
         progressBar.setString("Importing..");
 
-        JDialog progressDialog = new JDialog(parentFrame, "Importing CSV", false); // Изменено на false
+        JDialog progressDialog = new JDialog(parentFrame, "Importing CSV", false);
         progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         progressDialog.setLayout(new BorderLayout());
         progressDialog.add(progressBar, BorderLayout.CENTER);
@@ -135,7 +138,9 @@ public class ImportFromCsv {
         Thread currentImportThread = new Thread(() -> {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            // Используем правильную кодировку при чтении файла
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8))) {
                 int currentLine = 0;
                 String line;
 
