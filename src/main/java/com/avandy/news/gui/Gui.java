@@ -9,6 +9,7 @@ import com.avandy.news.model.GuiSize;
 import com.avandy.news.model.SearchType;
 import com.avandy.news.search.Search;
 import com.avandy.news.utils.Common;
+import com.avandy.news.utils.ImportFromCsv;
 import com.avandy.news.utils.Login;
 import com.avandy.news.utils.OsChecker;
 import com.avandy.news.utils.Reminder;
@@ -79,7 +80,7 @@ public class Gui extends JFrame {
     public static JProgressBar progressBar;
     private SystemTray systemTray;
     private static int mainTableRowNum;
-    private static int titleColumnNum;
+    static int titleColumnNum;
     private static int sourceColumnNum;
     private static int feelColumnNum;
     private static int weightColumnNum;
@@ -309,7 +310,12 @@ public class Gui extends JFrame {
 
                     // Show describe (menu)
                     JMenuItem menuDescribe = new JMenuItem(rightClickMenuDescribeText, Icons.SETTINGS_DESCRIBE_ICON);
-                    menuDescribe.addActionListener(x -> Common.showInfo(jdbcQueries.getLinkOrDescribeByHash(source, title, "describe")));
+                    menuDescribe.addActionListener(x -> {
+                                String describe = jdbcQueries.getLinkOrDescribeByHash(source, title, "describe");
+                                if (describe != null && describe.length() > 0)
+                                    Common.showInfo(describe);
+                            }
+                    );
 
                     // Add to favorites (menu)
                     JMenuItem menuFavorite = new JMenuItem(rightClickMenuToFavoritesText, Icons.WHEN_OK);
@@ -366,6 +372,80 @@ public class Gui extends JFrame {
                             }
 
                         } catch (Exception ignored) {
+                        }
+                    });
+
+                    // Edit
+                    JMenuItem menuEdit = new JMenuItem(rightClickMenuEditText, Icons.EDIT_ICON);
+                    menuEdit.addActionListener(x -> {
+                        int row = mainTable.getSelectedRow();
+
+                        // Получаем данные из выбранной строки
+                        String oldTitle = (String) mainTable.getValueAt(row, titleColumnNum);
+                        String oldSource = (String) mainTable.getValueAt(row, sourceColumnNum);
+
+                        // Получаем описание и ссылку из базы
+                        String oldDescribe = jdbcQueries.getLinkOrDescribeByHash(oldSource, oldTitle, "describe");
+                        String oldLink = jdbcQueries.getLinkOrDescribeByHash(oldSource, oldTitle, "link");
+
+                        // Создаем панель для ввода данных
+                        JPanel editPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+
+                        JTextArea titleField = new JTextArea(oldTitle, 2, 10);
+                        titleField.setLineWrap(true);
+                        titleField.setWrapStyleWord(true);
+                        JTextField sourceField = new JTextField(oldSource, 2);
+                        JTextArea linkField = new JTextArea(oldLink);
+                        linkField.setLineWrap(true);
+                        linkField.setWrapStyleWord(true);
+                        JTextArea describeArea = new JTextArea(oldDescribe, 5, 20);
+                        describeArea.setLineWrap(true);
+                        describeArea.setWrapStyleWord(true);
+                        JScrollPane describeScroll = new JScrollPane(describeArea);
+
+                        editPanel.add(new JLabel("Title:"));
+                        editPanel.add(titleField);
+                        editPanel.add(new JLabel("Source:"));
+                        editPanel.add(sourceField);
+                        editPanel.add(new JLabel("Link:"));
+                        editPanel.add(linkField);
+                        editPanel.add(new JLabel("Description:"));
+                        editPanel.add(describeScroll);
+
+                        String[] options = {"Save", "Cancel"};
+                        int result = JOptionPane.showOptionDialog(
+                                mainTableScrollPane,
+                                editPanel,
+                                "Edit News",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.PLAIN_MESSAGE,
+                                Icons.EDIT_ICON,
+                                options,
+                                options[0]
+                        );
+
+                        if (result == JOptionPane.YES_OPTION) {
+                            String newTitle = titleField.getText().trim();
+                            String newSource = sourceField.getText().trim();
+                            String newLink = linkField.getText().trim();
+                            String newDescribe = describeArea.getText().trim();
+
+                            // Проверяем, что обязательные поля не пустые
+                            if (newTitle.isEmpty() || newSource.isEmpty()) {
+                                Common.showAlert("Title, Source are required fields!");
+                                return;
+                            }
+
+                            // Обновляем данные в базе
+                            boolean updated = jdbcQueries.updateNewsInArchive(oldTitle, newTitle,
+                                    newLink, newSource, newDescribe);
+
+                            if (updated) {
+                                mainTable.setValueAt(newTitle, row, titleColumnNum);
+                                mainTable.setValueAt(newSource, row, sourceColumnNum);
+                            } else {
+                                Common.showAlert("Failed to update news!");
+                            }
                         }
                     });
 
@@ -430,7 +510,7 @@ public class Gui extends JFrame {
                     JPanel addWordPanel = new JPanel();
                     JTextField addWordTextField = new JTextField(10);
                     JButton addWordButton = new JButton();
-                    addWordButton.setToolTipText(rightClickMenuKeywordsToolpitText);
+                    addWordButton.setToolTipText(rightClickMenuKeywordsTooltipText);
                     addWordButton.setIcon(Icons.ADD_ICON);
                     addWordButton.setBorderPainted(false);
                     addWordButton.setFocusable(false);
@@ -498,6 +578,7 @@ public class Gui extends JFrame {
                     popup.add(menuFavorite);
                     popup.add(menuAddHeadline);
                     popup.add(menuCopy);
+                    popup.add(menuEdit);
                     popup.add(menuDeleteRow);
                     popup.add(menuRemoveAll);
                     popup.addSeparator();
@@ -1397,7 +1478,7 @@ public class Gui extends JFrame {
     }
 
     public static void openPage(String url) {
-        if (url != null && !url.equals("no data found")) {
+        if (url != null && !url.equals("no data found") && !url.equals("")) {
             url = url.replaceAll(("https://|http://"), "");
 
             URI uri = null;
@@ -1488,6 +1569,13 @@ public class Gui extends JFrame {
             }
         });
 
+        JMenuItem importFromCsv = new JMenuItem("Import", iconItem2);
+        importFromCsv.setToolTipText("Import from CSV file. Format: title,yyyy-mm-dd");
+        importFromCsv.addActionListener(x -> {
+            ImportFromCsv importer = new ImportFromCsv();
+            importer.importCsvFile(this);
+        });
+
         exportMenu.add(itemXls);
         exportMenu.add(itemCsv);
 
@@ -1499,6 +1587,7 @@ public class Gui extends JFrame {
         file.add(dates);
         file.addSeparator();
         file.add(exportMenu);
+        file.add(importFromCsv);
         file.add(settings);
         file.add(sqlite);
         file.addSeparator();

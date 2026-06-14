@@ -15,11 +15,11 @@ public class TextLang {
             jaroWinklerText3, jaroWinklerText4, jaroWinklerText5, jaroWinklerText6, jaroWinklerText7,
             rightClickMenuDescribeText, rightClickMenuToFavoritesText, rightClickMenuCopyText,
             rightClickMenuAddHeadlineText, rightClickMenuRemoveText, rightClickMenuClearText,
-            rightClickMenuAddWordToText, rightClickMenuKeywordsText, rightClickMenuKeywordsToolpitText,
+            rightClickMenuAddWordToText, rightClickMenuKeywordsText, rightClickMenuKeywordsTooltipText,
             rightClickMenuExcludedText, rightClickMenuExcludedTooltipText, settingsDialogText,
             assistWelcome, assistQuestion, assistFind, assistAllNews, assistKeywords, assistOneWord,
             assistPeriod, assistStartUp, reminderToday, reminderTomorrow, reminderWillBe, reminderIs,
-            checkAddedRss, checkAddedRssFailed, isFeelAndWeightText, addWordsWithComma;
+            checkAddedRss, checkAddedRssFailed, isFeelAndWeightText, addWordsWithComma, rightClickMenuEditText;
 
     public void setUiText() {
         String uiLang = Common.getUiLang();
@@ -77,12 +77,13 @@ public class TextLang {
             rightClickMenuDescribeText = "Describe";
             rightClickMenuToFavoritesText = "to favorites";
             rightClickMenuCopyText = "copy";
+            rightClickMenuEditText = "edit";
             rightClickMenuAddHeadlineText = "add headline";
             rightClickMenuRemoveText = "remove";
             rightClickMenuClearText = "clear";
             rightClickMenuAddWordToText = "Add word to";
             rightClickMenuKeywordsText = "Keywords";
-            rightClickMenuKeywordsToolpitText = "add to keywords list";
+            rightClickMenuKeywordsTooltipText = "add to keywords list";
             rightClickMenuExcludedText = "Excluded";
             rightClickMenuExcludedTooltipText = "add to excluded list";
             settingsDialogText = "Settings";
@@ -159,12 +160,13 @@ public class TextLang {
             rightClickMenuDescribeText = "Подробнее";
             rightClickMenuToFavoritesText = "в избранное";
             rightClickMenuCopyText = "копировать";
+            rightClickMenuEditText = "редактировать";
             rightClickMenuAddHeadlineText = "добавить новость";
             rightClickMenuRemoveText = "удалить строку";
             rightClickMenuClearText = "очистить всё";
             rightClickMenuAddWordToText = "Добавить слово в";
             rightClickMenuKeywordsText = "Ключевые слова";
-            rightClickMenuKeywordsToolpitText = "добавить в список ключевых слов";
+            rightClickMenuKeywordsTooltipText = "добавить в список ключевых слов";
             rightClickMenuExcludedText = "Слова-исключения";
             rightClickMenuExcludedTooltipText = "добавить в список слов-исключений";
             settingsDialogText = "Настройки";

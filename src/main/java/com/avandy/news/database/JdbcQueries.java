@@ -1215,4 +1215,79 @@ public class JdbcQueries {
         }
     }
 
+    // Проверка существования новости по заголовку
+    public boolean isNewsExists(String title) {
+        String query = "select count(*) from all_news where title = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, title);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            Common.console("Error checking news existence: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Вставка новости из CSV
+    public boolean insertNewsFromCsv(String title, String pubDate) {
+        String query = "INSERT INTO all_news (title, pub_date, news_date, source, describe, link, weight, title_lower) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, title);
+            pstmt.setString(2, pubDate);
+            pstmt.setString(3, pubDate);
+            pstmt.setString(4, "CSV");
+            pstmt.setString(5, "");
+            pstmt.setString(6, "");
+            pstmt.setInt(7, 0);
+            pstmt.setString(8, title.toLowerCase());
+
+            int result = pstmt.executeUpdate();
+            return result > 0;
+        } catch (SQLException e) {
+            if (!e.getMessage().contains("UNIQUE constraint failed")) {
+                Common.console("Error inserting news from CSV: " + e.getMessage());
+            }
+            return false;
+        }
+    }
+
+    // Обновление новости в архиве
+    public boolean updateNewsInArchive(String oldTitle, String newTitle, String newLink,
+                                       String newSource, String newDescribe) {
+        try {
+            String query = "UPDATE all_news SET " +
+                    "title = ?, " +
+                    "title_lower = ?, " +
+                    "link = ?, " +
+                    "source = ?, " +
+                    "describe = ? " +
+                    "WHERE title = ?";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, newTitle);
+            statement.setString(2, newTitle.toLowerCase());
+            statement.setString(3, newLink);
+            statement.setString(4, newSource);
+            statement.setString(5, newDescribe);
+            statement.setString(6, oldTitle);
+
+            int result = statement.executeUpdate();
+            statement.close();
+
+            return result > 0;
+        } catch (SQLException e) {
+            if (e.getMessage().contains("UNIQUE constraint failed")) {
+                Common.showAlert("A news with this title already exists!");
+            } else {
+                Common.showAlert("Update error: " + e.getMessage());
+            }
+            return false;
+        }
+    }
+
 }
