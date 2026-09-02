@@ -19,9 +19,9 @@
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <commons.text>1.15.0</commons.text>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <org.json>20251224</org.json>
+        <org.json>20260814</org.json>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <fasterxml.jackson>2.21.1</fasterxml.jackson>
+        <fasterxml.jackson>2.22.2</fasterxml.jackson>
     </properties>
 
     <dependencies>
