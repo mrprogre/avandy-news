@@ -15,7 +15,7 @@
         <!-- https://mvnrepository.com/artifact/com.rometools/rome -->
         <rometools.version>2.1.0</rometools.version>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-        <jsoup.version>1.22.1</jsoup.version>
+        <jsoup.version>1.23.2</jsoup.version>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <commons.text>1.15.0</commons.text>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
